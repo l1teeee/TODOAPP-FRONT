@@ -7,11 +7,16 @@ export interface SegmentedOption<T extends string> {
   label: string;
 }
 
+export interface SegmentOrigin {
+  x: number;
+  y: number;
+}
+
 export interface SegmentedControlProps<T extends string> {
   label: string;
   options: readonly SegmentedOption<T>[];
   value: T;
-  onChange: (value: T) => void;
+  onChange: (value: T, origin: SegmentOrigin) => void;
   className?: string;
 }
 
@@ -49,7 +54,13 @@ export function SegmentedControl<T extends string>({
             type="button"
             role="radio"
             aria-checked={selected}
-            onClick={() => onChange(option.value)}
+            onClick={(event) => {
+              const rect = event.currentTarget.getBoundingClientRect();
+              onChange(option.value, {
+                x: rect.left + rect.width / 2,
+                y: rect.top + rect.height / 2,
+              });
+            }}
             className={cn(
               "relative z-10 h-8 rounded-md px-3 text-xs font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent active:scale-[0.98] cursor-pointer",
               selected ? "text-fg" : "text-fg-secondary hover:text-fg",

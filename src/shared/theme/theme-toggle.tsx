@@ -2,7 +2,12 @@
 
 import { Moon, Sun } from "lucide-react";
 import { cn } from "@/shared/lib/cn";
-import { useTheme } from "./use-theme";
+import { useTheme, type ThemeOrigin } from "./use-theme";
+
+function centerOf(element: HTMLElement): ThemeOrigin {
+  const rect = element.getBoundingClientRect();
+  return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+}
 
 const SEGMENT_CLASSES =
   "theme-seg relative z-10 inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent active:scale-95";
@@ -27,7 +32,7 @@ export function ThemeToggle() {
         type="button"
         aria-label="Light theme"
         aria-pressed={resolved === "light"}
-        onClick={() => setPreference("light")}
+        onClick={(event) => setPreference("light", centerOf(event.currentTarget))}
         className={cn(
           SEGMENT_CLASSES,
           resolved === "light" ? "text-fg" : "text-fg-muted hover:text-fg",
@@ -39,7 +44,7 @@ export function ThemeToggle() {
         type="button"
         aria-label="Dark theme"
         aria-pressed={resolved === "dark"}
-        onClick={() => setPreference("dark")}
+        onClick={(event) => setPreference("dark", centerOf(event.currentTarget))}
         className={cn(
           SEGMENT_CLASSES,
           resolved === "dark" ? "text-fg" : "text-fg-muted hover:text-fg",

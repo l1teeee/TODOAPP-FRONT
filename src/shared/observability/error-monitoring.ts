@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/nextjs";
 import { ApiError } from "@/shared/api/api-error";
 import { publicEnv } from "@/shared/config/public-env";
 
-// Auth URLs can contain email addresses in their query strings.
+// Auth URLs and attributes can carry email addresses, sometimes percent-encoded.
 function stripQueryAndHash(url: string): string {
   try {
     const parsed = new URL(url, window.location.href);
@@ -15,12 +15,40 @@ function stripQueryAndHash(url: string): string {
 
 function redactEmails(text: string): string {
   let decoded = text;
-  try {
-    decoded = decodeURIComponent(text);
-  } catch {
-    decoded = text;
+  for (let i = 0; i < 2; i++) {
+    decoded = decoded.replace(/%[0-9A-F]{2}/gi, (sequence) =>
+      String.fromCharCode(parseInt(sequence.slice(1), 16)),
+    );
   }
   return decoded.replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[email]");
+}
+
+function scrubValue(value: unknown, depth = 4): unknown {
+  if (typeof value === "string") {
+    const text = /^(https?:\/\/|\/)/i.test(value) ? stripQueryAndHash(value) : value;
+    return redactEmails(text);
+  }
+  if (depth <= 0) return value;
+  if (Array.isArray(value)) return value.map((item) => scrubValue(item, depth - 1));
+  if (value && typeof value === "object" &&
+      (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null)) {
+    const result: Record<string, unknown> = {};
+    for (const [key, item] of Object.entries(value)) {
+      result[key] = scrubValue(item, depth - 1);
+    }
+    return result;
+  }
+  return value;
+}
+
+function scrubAttributes(data: Record<string, unknown> | undefined): void {
+  if (!data) return;
+  for (const key of ["http.query", "url.query", "http.fragment", "url.fragment"]) {
+    delete data[key];
+  }
+  for (const key of Object.keys(data)) {
+    data[key] = scrubValue(data[key]);
+  }
 }
 
 function sanitizeBreadcrumb(breadcrumb: Sentry.Breadcrumb): Sentry.Breadcrumb | null {
@@ -36,6 +64,8 @@ function sanitizeBreadcrumb(breadcrumb: Sentry.Breadcrumb): Sentry.Breadcrumb | 
       typeof breadcrumb.data?.url === "string") {
     breadcrumb.data.url = stripQueryAndHash(breadcrumb.data.url);
   }
+  scrubAttributes(breadcrumb.data);
+  if (breadcrumb.message) breadcrumb.message = scrubValue(breadcrumb.message) as string;
   return breadcrumb;
 }
 
@@ -43,6 +73,25 @@ function sanitizeEvent(event: Sentry.Event): void {
   if (event.request) {
     if (event.request.url) event.request.url = stripQueryAndHash(event.request.url);
     delete event.request.query_string;
+  }
+  scrubAttributes(event.contexts?.trace?.data);
+  scrubAttributes(event.extra);
+  if (event.tags) {
+    for (const key of Object.keys(event.tags)) {
+      const value = event.tags[key];
+      if (typeof value === "string") event.tags[key] = scrubValue(value) as string;
+    }
+  }
+  if (event.transaction) event.transaction = scrubValue(event.transaction) as string;
+  for (const span of event.spans ?? []) {
+    scrubAttributes(span.data);
+    if (span.description?.includes("?")) {
+      const match = span.description.match(/^(\S+\s+)(\S+)$/);
+      span.description = match
+        ? `${match[1]}${stripQueryAndHash(match[2])}`
+        : stripQueryAndHash(span.description);
+    }
+    if (span.description) span.description = scrubValue(span.description) as string;
   }
   if (event.breadcrumbs) {
     event.breadcrumbs = event.breadcrumbs
@@ -83,21 +132,6 @@ export function initErrorMonitoring(): void {
     },
     beforeSendTransaction(event) {
       sanitizeEvent(event);
-      if (event.transaction?.includes("?")) {
-        event.transaction = stripQueryAndHash(event.transaction);
-      }
-      for (const span of event.spans ?? []) {
-        for (const key of ["url", "http.url", "url.full", "http.target"]) {
-          const value = span.data[key];
-          if (typeof value === "string") span.data[key] = stripQueryAndHash(value);
-        }
-        if (span.description?.includes("?")) {
-          const match = span.description.match(/^(\S+\s+)(\S+)$/);
-          span.description = match
-            ? `${match[1]}${stripQueryAndHash(match[2])}`
-            : stripQueryAndHash(span.description);
-        }
-      }
       return event;
     },
     beforeBreadcrumb: sanitizeBreadcrumb,

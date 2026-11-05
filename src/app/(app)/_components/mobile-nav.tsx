@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSignOut } from "@/features/auth/api/use-auth";
 import { UserMenu } from "@/features/profile/components/user-menu";
-import { ThemeToggle } from "@/shared/theme/theme-toggle";
+import { ThemeToggle, ThemeToggleButton } from "@/shared/theme/theme-toggle";
 import { useTheme } from "@/shared/theme/use-theme";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { IconButton } from "@/shared/ui/icon-button";
@@ -41,7 +41,12 @@ export function MobileNav() {
       </div>
 
       <div className="flex items-center gap-2">
-        <ThemeToggle />
+        <span className="sm:hidden">
+          <ThemeToggleButton />
+        </span>
+        <span className="hidden sm:inline-flex">
+          <ThemeToggle />
+        </span>
         <UserMenu onSignOut={handleSignOut} />
       </div>
 
@@ -57,7 +62,7 @@ export function MobileNav() {
           <AppRail onNavigate={() => setOpen(false)} />
           <AppSidebar
             onNavigate={() => setOpen(false)}
-            className="flex-1 border-r-0"
+            className="flex-1 border-r-0 [&_[data-nav-indicator]]:hidden"
           />
         </div>
       </Sheet>

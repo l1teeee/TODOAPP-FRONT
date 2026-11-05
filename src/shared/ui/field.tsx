@@ -12,6 +12,8 @@ export interface FieldProps {
   htmlFor?: string;
   hint?: string;
   error?: string;
+  /** For controls that are not a single labelable element (a button group). */
+  group?: boolean;
   className?: string;
   children: ReactNode;
 }
@@ -21,6 +23,7 @@ export function Field({
   htmlFor,
   hint,
   error,
+  group = false,
   className,
   children,
 }: FieldProps) {
@@ -30,7 +33,7 @@ export function Field({
   const errorId = error ? `${controlId}-error` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
 
-  const enhancedChild = isValidElement<{
+  const enhancedChild = !group && isValidElement<{
     id?: string;
     "aria-describedby"?: string;
     invalid?: boolean;
@@ -49,12 +52,16 @@ export function Field({
 
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <label
-        htmlFor={controlId}
-        className="text-xs font-semibold text-fg-secondary"
-      >
-        {label}
-      </label>
+      {group ? (
+        <span className="text-xs font-semibold text-fg-secondary">{label}</span>
+      ) : (
+        <label
+          htmlFor={controlId}
+          className="text-xs font-semibold text-fg-secondary"
+        >
+          {label}
+        </label>
+      )}
       {enhancedChild}
       {hint && !error ? (
         <p id={hintId} className="text-xs text-fg-muted">

@@ -100,6 +100,7 @@ export function SubtaskChecklist({ activityId }: SubtaskChecklistProps) {
             >
               <label className="flex flex-1 cursor-pointer items-center gap-3 text-xs font-medium text-fg">
                 <Checkbox
+                  name={`subtask-${subtask.id}`}
                   checked={subtask.isDone}
                   onChange={(event) => {
                     if (!activityId) return;

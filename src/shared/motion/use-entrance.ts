@@ -127,6 +127,7 @@ export function useActiveIndicator(
       if (!indicator) {
         indicator = document.createElement("span");
         indicator.setAttribute("aria-hidden", "true");
+        indicator.setAttribute("data-nav-indicator", "");
         indicator.className = indicatorClassName;
         indicatorRef.current = indicator;
         activeLink.appendChild(indicator);

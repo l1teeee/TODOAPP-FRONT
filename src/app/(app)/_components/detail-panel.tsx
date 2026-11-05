@@ -275,8 +275,7 @@ function DrawerDetailPanel() {
         }
       }}
       side="right"
-      title={activity?.title ?? "Activity details"}
-      description="Activity details and checklist"
+      title="Details"
       className="p-4"
     >
       <div className="flex h-full flex-col pt-2">

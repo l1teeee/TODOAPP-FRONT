@@ -119,7 +119,7 @@ export function DashboardHeader({
           placeholder="Search"
           className="flex-1"
         />
-        <div className="flex items-center gap-3 xl:hidden">
+        <div className="hidden items-center gap-3 lg:flex xl:hidden">
           <ThemeToggle />
           <UserMenu onSignOut={handleSignOut} />
         </div>

@@ -48,7 +48,7 @@ export function SummaryStats({ summary }: SummaryStatsProps) {
   return (
     <div
       ref={gridRef}
-      className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4"
+      className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4"
     >
       {tiles.map((tile) => {
         const Icon = tile.icon;
@@ -61,7 +61,7 @@ export function SummaryStats({ summary }: SummaryStatsProps) {
               <p className="text-xs font-semibold text-navy-muted">
                 {tile.label}
               </p>
-              <p className="mt-2 text-2xl font-extrabold tracking-tight text-navy-fg">
+              <p className="mt-2 text-[28px] font-extrabold md:text-2xl tracking-tight text-navy-fg">
                 {tile.value}
               </p>
             </div>

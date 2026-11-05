@@ -44,7 +44,7 @@ export function UserMenu({ onSignOut, compact = false }: UserMenuProps) {
           <Avatar name={displayName} className={compact ? "h-9! w-9!" : undefined} />
           {compact ? null : (
             <>
-              <span className="max-w-[7rem] truncate text-sm font-semibold text-fg">
+              <span className="hidden max-w-[7rem] truncate text-sm font-semibold text-fg sm:inline">
                 {displayName}
               </span>
               <ChevronDown

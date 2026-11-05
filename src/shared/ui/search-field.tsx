@@ -1,6 +1,7 @@
 "use client";
 
 import { Search, X } from "lucide-react";
+import { useId } from "react";
 import { cn } from "@/shared/lib/cn";
 import { IconButton } from "./icon-button";
 
@@ -17,6 +18,8 @@ export function SearchField({
   placeholder = "Search",
   className,
 }: SearchFieldProps) {
+  const id = useId();
+
   return (
     <div className={cn("relative flex items-center", className)}>
       <Search
@@ -24,6 +27,8 @@ export function SearchField({
         className="pointer-events-none absolute left-3.5 h-4 w-4 text-fg-muted"
       />
       <input
+        id={id}
+        name="q"
         type="search"
         aria-label="Search activities"
         value={value}

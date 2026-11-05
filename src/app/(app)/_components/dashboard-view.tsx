@@ -261,7 +261,7 @@ export function DashboardView({ view }: DashboardViewProps) {
               </Field>
             ) : null}
             {modules?.includes("tags") ? (
-              <Field label="Tags">
+              <Field label="Tags" group>
                 <TagPicker
                   selectedIds={values.tagIds}
                   onChange={(tagIds) =>

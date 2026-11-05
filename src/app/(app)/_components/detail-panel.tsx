@@ -192,7 +192,7 @@ export function DetailPanel() {
         data-motion="pending"
         aria-label="Activity details"
         aria-busy={isLoading}
-        className="hidden xl:flex xl:h-full xl:w-[320px] xl:shrink-0 xl:flex-col xl:border-l xl:border-line xl:bg-surface xl:p-5 xl:overflow-y-auto"
+        className="hidden xl:flex xl:h-full xl:w-[320px] xl:shrink-0 xl:flex-col xl:border-l xl:border-line xl:bg-surface xl:p-5 xl:overflow-y-auto xl:overscroll-contain scroll-soft"
       >
         <div className="mb-6 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">

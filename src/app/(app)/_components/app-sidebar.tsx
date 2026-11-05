@@ -62,7 +62,7 @@ export function AppSidebar({ onNavigate, className }: AppSidebarProps) {
       data-motion="pending"
       aria-label="Sidebar navigation"
       className={cn(
-        "flex h-full w-[220px] shrink-0 flex-col justify-between overflow-y-auto border-r border-line bg-surface py-5 pl-3 pr-0",
+        "flex h-full w-[220px] shrink-0 scroll-soft flex-col justify-between overscroll-contain overflow-y-auto border-r border-line bg-surface py-5 pl-3 pr-0",
         className,
       )}
     >

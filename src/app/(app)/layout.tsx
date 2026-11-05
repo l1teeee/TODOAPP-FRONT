@@ -229,7 +229,7 @@ function AppShell({ children }: { children: ReactNode }) {
 
       <div
         ref={sidebarWrapRef}
-        className="hidden lg:block lg:h-full lg:w-[220px] lg:overflow-hidden"
+        className="hidden lg:block lg:h-full lg:w-[220px] lg:shrink-0 lg:overflow-hidden"
       >
         <div ref={sidebarPanelRef} className="h-full w-[220px]">
           <Suspense fallback={<SidebarFallback />}>
@@ -238,12 +238,12 @@ function AppShell({ children }: { children: ReactNode }) {
         </div>
       </div>
 
-      <main className="min-w-0 flex-1 overflow-y-auto bg-canvas">
+      <main className="scroll-soft min-w-0 flex-1 overflow-x-hidden overflow-y-auto bg-canvas">
         <div
           key={pathname}
           ref={viewRef}
           data-motion="pending"
-          className="[contain:layout_paint]"
+          className="min-w-0 [contain:layout_paint]"
         >
           {children}
         </div>
@@ -251,7 +251,7 @@ function AppShell({ children }: { children: ReactNode }) {
 
       <div
         ref={detailWrapRef}
-        className="xl:h-full xl:w-[320px] xl:overflow-hidden"
+        className="xl:h-full xl:w-[320px] xl:shrink-0 xl:overflow-hidden"
       >
         <div ref={detailPanelRef} className="xl:h-full xl:w-[320px]">
           <Suspense fallback={<DetailFallback />}>

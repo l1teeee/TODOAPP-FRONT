@@ -1,13 +1,15 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { Loader2, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState, type FormEvent } from "react";
+import { useId, useRef, useState, type FormEvent } from "react";
 import { Alert } from "@/shared/ui/alert";
 import { Button } from "@/shared/ui/button";
 import { Field } from "@/shared/ui/field";
+import { setRememberMe } from "@/shared/auth/supabase-client";
 import { Input } from "@/shared/ui/input";
+import { Switch } from "@/shared/ui/switch";
 import { useSignIn } from "../api/use-auth";
 import {
   authErrorMessage,
@@ -27,6 +29,8 @@ export function LoginForm() {
   const router = useRouter();
   const signInMutation = useSignIn();
 
+  const rememberId = useId();
+  const [remember, setRemember] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [touched, setTouched] = useState<{ email?: boolean; password?: boolean }>({});
@@ -53,6 +57,7 @@ export function LoginForm() {
       return;
     }
 
+    setRememberMe(remember);
     signInMutation.mutate(
       { email: email.trim(), password },
       {
@@ -72,13 +77,12 @@ export function LoginForm() {
       subtitle="Log in to continue with your activities."
       footer={
         <>
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/register"
-            className="font-semibold text-accent hover:underline"
-          >
-            Create one
-          </Link>
+          <p>
+            New here? <Link href="/register">Create an account</Link>
+          </p>
+          <p>
+            Prefer a code? <Link href="/login/code">Email me a login code</Link>
+          </p>
         </>
       }
     >
@@ -104,6 +108,7 @@ export function LoginForm() {
           <Input
             ref={emailRef}
             type="email"
+            leadingIcon={<Mail className="h-4 w-4" />}
             autoComplete="email"
             placeholder="you@example.com"
             value={email}
@@ -141,13 +146,16 @@ export function LoginForm() {
           }}
         />
 
-        <div className="flex justify-end">
-          <Link
-            href="/forgot-password"
-            className="text-xs font-semibold text-accent hover:underline"
-          >
-            Forgot password?
-          </Link>
+        <div className="flex items-center gap-3">
+          <Switch
+            id={rememberId}
+            checked={remember}
+            onCheckedChange={setRemember}
+            disabled={signInMutation.isPending}
+          />
+          <label htmlFor={rememberId} className="cursor-pointer text-sm text-fg">
+            Remember me
+          </label>
         </div>
 
         <Button
@@ -163,10 +171,10 @@ export function LoginForm() {
         </Button>
 
         <Link
-          href="/login/code"
-          className="inline-flex h-10 w-full items-center justify-center rounded-control px-4 text-sm font-medium text-fg-secondary transition-colors hover:bg-surface-muted hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          href="/forgot-password"
+          className="inline-block text-sm font-semibold text-accent hover:underline"
         >
-          Email me a login code
+          Forgot password?
         </Link>
       </form>
     </AuthCard>

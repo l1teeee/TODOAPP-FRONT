@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState, type FormEvent } from "react";
 import { Alert } from "@/shared/ui/alert";
@@ -87,7 +88,12 @@ export function ResetPasswordForm() {
   };
 
   return (
-    <AuthCard title="Set a new password">
+    <AuthCard
+      title="Set a new password"
+      footer={
+        <Link href="/login">Back to log in</Link>
+      }
+    >
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
         {apiErrorCode ? (
           <Alert variant="error">{authErrorMessage(apiErrorCode)}</Alert>

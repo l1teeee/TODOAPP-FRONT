@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { Loader2, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState, type FormEvent } from "react";
@@ -156,6 +156,7 @@ export function RegisterForm() {
           <Input
             ref={emailRef}
             type="email"
+            leadingIcon={<Mail className="h-4 w-4" />}
             autoComplete="email"
             placeholder="you@example.com"
             value={email}

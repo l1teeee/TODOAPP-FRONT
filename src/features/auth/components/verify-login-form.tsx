@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { publicEnv } from "@/shared/config/public-env";
 import { Alert } from "@/shared/ui/alert";
@@ -16,14 +16,14 @@ import {
   type AuthErrorCode,
 } from "../model/auth-error";
 import { validateCodeField } from "../model/auth-validation";
+import { clearPendingEmail, usePendingEmail } from "../model/pending-email";
 import { AuthCard } from "./auth-card";
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
 export function VerifyLoginForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const email = searchParams.get("email") ?? "";
+  const email = usePendingEmail("login");
   const verifyMutation = useVerifyLoginCode();
   const resendMutation = useRequestLoginCode();
 
@@ -35,6 +35,10 @@ export function VerifyLoginForm() {
   const codeRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (email === null && !verifyMutation.isSuccess) router.replace("/login/code");
+  }, [email, router, verifyMutation.isSuccess]);
+
+  useEffect(() => {
     if (secondsLeft <= 0) return;
     const timer = setTimeout(() => setSecondsLeft((value) => value - 1), 1000);
     return () => clearTimeout(timer);
@@ -42,6 +46,7 @@ export function VerifyLoginForm() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (typeof email !== "string") return;
     setApiErrorCode(null);
 
     const error = validateCodeField(code, publicEnv.otpLength);
@@ -55,6 +60,7 @@ export function VerifyLoginForm() {
       { email, code },
       {
         onSuccess: () => {
+          clearPendingEmail("login");
           router.push("/today");
         },
         onError: (cause) => {
@@ -65,6 +71,7 @@ export function VerifyLoginForm() {
   };
 
   const handleResend = () => {
+    if (typeof email !== "string") return;
     setApiErrorCode(null);
     resendMutation.mutate(
       { email },
@@ -82,7 +89,7 @@ export function VerifyLoginForm() {
   return (
     <AuthCard
       title="Check your email"
-      subtitle={`We sent a ${publicEnv.otpLength}-digit code to ${email || "your email"}.`}
+      subtitle={`We sent a ${publicEnv.otpLength}-digit code to ${typeof email === "string" ? email : "your email"}.`}
       footer={
         <Link
           href="/login/code"
@@ -114,7 +121,7 @@ export function VerifyLoginForm() {
           type="submit"
           variant="primary"
           className="w-full"
-          disabled={verifyMutation.isPending}
+          disabled={typeof email !== "string" || verifyMutation.isPending}
         >
           {verifyMutation.isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

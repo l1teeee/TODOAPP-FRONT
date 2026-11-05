@@ -16,6 +16,7 @@ import {
   type AuthErrorCode,
 } from "../model/auth-error";
 import { validateEmailField } from "../model/auth-validation";
+import { savePendingEmail } from "../model/pending-email";
 import { AuthCard, AuthDivider, authSecondaryLinkClass } from "./auth-card";
 
 export function LoginCodeForm() {
@@ -44,7 +45,8 @@ export function LoginCodeForm() {
       { email: trimmed },
       {
         onSuccess: () => {
-          router.push(`/login/verify?email=${encodeURIComponent(trimmed)}`);
+          savePendingEmail("login", trimmed);
+          router.push("/login/verify");
         },
         onError: (cause) => {
           setApiErrorCode(getAuthErrorCode(cause));

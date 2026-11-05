@@ -20,6 +20,7 @@ import {
   validateForgotPasswordForm,
   type ForgotPasswordFieldErrors,
 } from "../model/auth-validation";
+import { savePendingEmail } from "../model/pending-email";
 import { AuthCard } from "./auth-card";
 import { TurnstileField, type TurnstileFieldHandle } from "./turnstile-field";
 
@@ -57,9 +58,8 @@ export function ForgotPasswordForm() {
       { email: trimmedEmail, turnstileToken },
       {
         onSuccess: () => {
-          router.push(
-            `/reset-password?email=${encodeURIComponent(trimmedEmail)}`,
-          );
+          savePendingEmail("recovery", trimmedEmail);
+          router.push("/reset-password");
         },
         onError: (error) => {
           setApiErrorCode(getAuthErrorCode(error));

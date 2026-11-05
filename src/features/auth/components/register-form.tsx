@@ -22,6 +22,7 @@ import {
   validateRegisterForm,
   type RegisterFieldErrors,
 } from "../model/auth-validation";
+import { savePendingEmail } from "../model/pending-email";
 import { AuthCard } from "./auth-card";
 import { PasswordField } from "./password-field";
 import { TurnstileField, type TurnstileFieldHandle } from "./turnstile-field";
@@ -98,9 +99,8 @@ export function RegisterForm() {
       },
       {
         onSuccess: () => {
-          router.push(
-            `/verify-email?email=${encodeURIComponent(trimmedEmail)}`,
-          );
+          savePendingEmail("signup", trimmedEmail);
+          router.push("/verify-email");
         },
         onError: (error) => {
           setApiErrorCode(getAuthErrorCode(error));

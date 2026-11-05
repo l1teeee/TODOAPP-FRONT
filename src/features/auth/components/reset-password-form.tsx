@@ -2,8 +2,8 @@
 
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useRef, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { publicEnv } from "@/shared/config/public-env";
 import { Alert } from "@/shared/ui/alert";
 import { Button } from "@/shared/ui/button";
@@ -22,13 +22,13 @@ import {
   validateResetPasswordForm,
   type ResetPasswordFieldErrors,
 } from "../model/auth-validation";
+import { clearPendingEmail, usePendingEmail } from "../model/pending-email";
 import { AuthCard } from "./auth-card";
 import { PasswordField } from "./password-field";
 
 export function ResetPasswordForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const email = searchParams.get("email") ?? "";
+  const email = usePendingEmail("recovery");
   const resetMutation = useResetPassword();
 
   const [code, setCode] = useState("");
@@ -46,8 +46,13 @@ export function ResetPasswordForm() {
   const newPasswordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (email === null && !resetMutation.isSuccess) router.replace("/forgot-password");
+  }, [email, router, resetMutation.isSuccess]);
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (typeof email !== "string") return;
     setApiErrorCode(null);
     setTouched({
       code: true,
@@ -82,6 +87,7 @@ export function ResetPasswordForm() {
       { email, code, newPassword },
       {
         onSuccess: () => {
+          clearPendingEmail("recovery");
           router.push("/today");
         },
         onError: (error) => {
@@ -179,7 +185,7 @@ export function ResetPasswordForm() {
           type="submit"
           variant="primary"
           className="w-full"
-          disabled={resetMutation.isPending}
+          disabled={typeof email !== "string" || resetMutation.isPending}
         >
           {resetMutation.isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

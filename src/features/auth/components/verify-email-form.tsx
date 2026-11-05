@@ -2,8 +2,8 @@
 
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useRef, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { publicEnv } from "@/shared/config/public-env";
 import { Alert } from "@/shared/ui/alert";
 import { Button } from "@/shared/ui/button";
@@ -20,12 +20,12 @@ import {
   validateVerifyEmailForm,
   type VerifyEmailFieldErrors,
 } from "../model/auth-validation";
+import { clearPendingEmail, usePendingEmail } from "../model/pending-email";
 import { AuthCard } from "./auth-card";
 
 export function VerifyEmailForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const email = searchParams.get("email") ?? "your email";
+  const email = usePendingEmail("signup");
   const verifyMutation = useVerifySignupCode();
 
   const [code, setCode] = useState("");
@@ -35,8 +35,13 @@ export function VerifyEmailForm() {
 
   const codeRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (email === null && !verifyMutation.isSuccess) router.replace("/register");
+  }, [email, router, verifyMutation.isSuccess]);
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (typeof email !== "string") return;
     setApiErrorCode(null);
     setTouched({ code: true });
 
@@ -52,6 +57,7 @@ export function VerifyEmailForm() {
       { email, code },
       {
         onSuccess: () => {
+          clearPendingEmail("signup");
           router.push("/today");
         },
         onError: (error) => {
@@ -64,7 +70,7 @@ export function VerifyEmailForm() {
   return (
     <AuthCard
       title="Check your email"
-      subtitle={`We sent a ${publicEnv.otpLength}-digit code to ${email}.`}
+      subtitle={`We sent a ${publicEnv.otpLength}-digit code to ${typeof email === "string" ? email : "your email"}.`}
       footer={
         <>
           Wrong email or no code?{" "}
@@ -104,7 +110,7 @@ export function VerifyEmailForm() {
           type="submit"
           variant="primary"
           className="w-full"
-          disabled={verifyMutation.isPending}
+          disabled={typeof email !== "string" || verifyMutation.isPending}
         >
           {verifyMutation.isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

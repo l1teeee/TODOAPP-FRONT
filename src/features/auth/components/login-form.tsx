@@ -22,6 +22,7 @@ import {
   validatePasswordField,
   type LoginFieldErrors,
 } from "../model/auth-validation";
+import { savePendingEmail } from "../model/pending-email";
 import { AuthCard, AuthDivider, authSecondaryLinkClass } from "./auth-card";
 import { PasswordField } from "./password-field";
 
@@ -89,7 +90,8 @@ export function LoginForm() {
               <>
                 {" "}
                 <Link
-                  href={`/verify-email?email=${encodeURIComponent(email.trim())}`}
+                  href="/verify-email"
+                  onClick={() => savePendingEmail("signup", email.trim())}
                   className="font-semibold underline"
                 >
                   Verify your email

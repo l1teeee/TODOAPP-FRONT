@@ -56,15 +56,24 @@ function VideoLoop({ onFail }: VideoLoopProps) {
         let index = 0;
         let swapping = false;
         let failed = false;
+        // Set by this run's cleanup; Strict Mode runs the effect twice.
+        let disposed = false;
 
         const fail = () => {
-          if (failed) return;
+          if (failed || disposed) return;
           failed = true;
           onFail();
         };
 
         const play = (video: HTMLVideoElement): Promise<void> =>
-          video.play().catch(fail);
+          video.play().catch((error: unknown) => {
+            // pause() or a new load interrupts play() with an AbortError.
+            if (disposed) return;
+            if (error instanceof DOMException && error.name === "AbortError") {
+              return;
+            }
+            fail();
+          });
 
         const loadInto = (video: HTMLVideoElement, playlistIndex: number) => {
           video.src = PLAYLIST[playlistIndex];
@@ -73,14 +82,14 @@ function VideoLoop({ onFail }: VideoLoopProps) {
         };
 
         const swap = () => {
-          if (swapping || failed) return;
+          if (swapping || failed || disposed) return;
           swapping = true;
           const current = layers[active];
           const next = layers[1 - active];
           next.preload = "auto";
           next.currentTime = 0;
           void play(next).then(() => {
-            if (failed) return;
+            if (failed || disposed) return;
             gsap.to(next, {
               autoAlpha: 1,
               duration: CROSSFADE_SECONDS,
@@ -91,6 +100,7 @@ function VideoLoop({ onFail }: VideoLoopProps) {
               duration: CROSSFADE_SECONDS,
               ease: "power2.inOut",
               onComplete: () => {
+                if (disposed) return;
                 current.pause();
                 active = 1 - active;
                 index = (index + 1) % PLAYLIST.length;
@@ -101,7 +111,15 @@ function VideoLoop({ onFail }: VideoLoopProps) {
           });
         };
 
+        const handleError = (event: Event) => {
+          const video = event.currentTarget;
+          if (video instanceof HTMLVideoElement && video.error) {
+            fail();
+          }
+        };
+
         const handleTimeUpdate = () => {
+          if (disposed) return;
           const video = layers[active];
           if (
             Number.isFinite(video.duration) &&
@@ -112,6 +130,7 @@ function VideoLoop({ onFail }: VideoLoopProps) {
         };
 
         const handleVisibility = () => {
+          if (disposed) return;
           const video = layers[active];
           if (document.hidden) {
             video.pause();
@@ -137,18 +156,19 @@ function VideoLoop({ onFail }: VideoLoopProps) {
         for (const video of layers) {
           video.addEventListener("timeupdate", handleTimeUpdate);
           video.addEventListener("ended", swap);
-          video.addEventListener("error", fail);
+          video.addEventListener("error", handleError);
         }
         document.addEventListener("visibilitychange", handleVisibility);
         void play(first);
 
         return () => {
+          disposed = true;
           document.removeEventListener("visibilitychange", handleVisibility);
           first.removeEventListener("playing", handleFirstPlaying);
           for (const video of layers) {
             video.removeEventListener("timeupdate", handleTimeUpdate);
             video.removeEventListener("ended", swap);
-            video.removeEventListener("error", fail);
+            video.removeEventListener("error", handleError);
             video.pause();
           }
         };

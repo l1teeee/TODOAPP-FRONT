@@ -19,6 +19,7 @@
   --navy: light-dark(#1E255E, #2C3577);
   --navy-fg: #FFFFFF;
   --navy-muted: light-dark(#AEB8E6, #C3CBF2);
+  --media-bg: #0E0E10;
   --success: light-dark(#10B981, #4ADE9B);
   --status-todo: light-dark(#3B82F6, #6EA8FF);
   --status-progress: light-dark(#DE3B75, #F27BA6);
@@ -84,6 +85,7 @@
   --color-navy: var(--navy);
   --color-navy-fg: var(--navy-fg);
   --color-navy-muted: var(--navy-muted);
+  --color-media-bg: var(--media-bg);
   --color-success: var(--success);
   --color-status-todo: var(--status-todo);
   --color-status-progress: var(--status-progress);

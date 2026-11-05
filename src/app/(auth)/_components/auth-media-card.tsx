@@ -141,20 +141,11 @@ function VideoLoop({ onFail }: VideoLoopProps) {
           }
         };
 
-        gsap.set(layers, { autoAlpha: 0 });
+        gsap.set(second, { autoAlpha: 0 });
         first.src = PLAYLIST[0];
         first.preload = "auto";
         loadInto(second, 1);
 
-        const handleFirstPlaying = () => {
-          gsap.to(first, {
-            autoAlpha: 1,
-            duration: CROSSFADE_SECONDS,
-            ease: "power2.inOut",
-          });
-        };
-
-        first.addEventListener("playing", handleFirstPlaying, { once: true });
         for (const video of layers) {
           video.addEventListener("timeupdate", handleTimeUpdate);
           video.addEventListener("ended", swap);
@@ -166,7 +157,6 @@ function VideoLoop({ onFail }: VideoLoopProps) {
         return () => {
           disposed = true;
           document.removeEventListener("visibilitychange", handleVisibility);
-          first.removeEventListener("playing", handleFirstPlaying);
           for (const video of layers) {
             video.removeEventListener("timeupdate", handleTimeUpdate);
             video.removeEventListener("ended", swap);
@@ -209,7 +199,7 @@ export function AuthMediaCard({ className }: AuthMediaCardProps) {
   return (
     <div
       className={cn(
-        "relative h-full w-full overflow-hidden rounded-[40px] bg-navy",
+        "relative h-full w-full overflow-hidden rounded-[40px] bg-media-bg",
         className,
       )}
     >

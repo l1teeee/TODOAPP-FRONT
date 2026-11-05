@@ -23,21 +23,21 @@ export interface AssistantCardProps {
 }
 
 const CONTAINER_CLASSES =
-  "rounded-card bg-navy bg-[radial-gradient(circle_at_90%_0%,color-mix(in_srgb,var(--berry)_45%,transparent),transparent_55%),radial-gradient(circle_at_0%_100%,color-mix(in_srgb,var(--accent)_40%,transparent),transparent_55%)] p-5 text-navy-fg";
+  "rounded-card border border-line bg-surface p-5 text-fg shadow-xs";
 
 function AssistantSkeleton() {
   return (
     <div className={CONTAINER_CLASSES} aria-busy="true">
       <div className="flex items-start gap-4">
-        <Skeleton className="h-11 w-11 shrink-0 rounded-full bg-white/10!" />
+        <Skeleton className="h-10 w-10 shrink-0 rounded-full" />
         <div className="flex-1 space-y-2.5">
-          <Skeleton className="h-4 w-1/3 bg-white/10!" />
-          <Skeleton className="h-3.5 w-3/4 bg-white/10!" />
+          <Skeleton className="h-4 w-1/3" />
+          <Skeleton className="h-3.5 w-3/4" />
           <div className="flex flex-wrap gap-2 pt-2">
             {Array.from({ length: 3 }).map((_, index) => (
               <Skeleton
                 key={index}
-                className="h-7 w-32 rounded-full bg-white/10!"
+                className="h-7 w-32 rounded-full"
               />
             ))}
           </div>
@@ -93,9 +93,9 @@ export function AssistantCard({ input, isLoading, onSelect }: AssistantCardProps
         <div className="relative shrink-0">
           <span
             aria-hidden="true"
-            className="absolute inset-0 rounded-full bg-white/20 motion-safe:animate-pulse"
+            className="absolute inset-0 rounded-full bg-accent-soft motion-safe:animate-pulse"
           />
-          <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-white/15">
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-accent-soft text-accent">
             <Sparkles className="h-5 w-5" aria-hidden="true" />
           </div>
         </div>
@@ -104,7 +104,7 @@ export function AssistantCard({ input, isLoading, onSelect }: AssistantCardProps
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <h2 className="text-base font-bold">{composeGreeting(input)}</h2>
-              <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-semibold text-navy-muted">
+              <span className="rounded-full bg-surface-muted px-2 py-0.5 text-[11px] font-semibold text-fg-secondary">
                 {brief.source === "ai" ? "AI" : "Smart summary"}
               </span>
             </div>
@@ -114,14 +114,13 @@ export function AssistantCard({ input, isLoading, onSelect }: AssistantCardProps
                 size="sm"
                 disabled={isRefreshing}
                 onClick={refresh}
-                className="text-navy-fg hover:bg-white/10 hover:text-navy-fg"
               >
                 <RefreshCw className="h-4 w-4" aria-hidden="true" />
               </IconButton>
             ) : null}
           </div>
 
-          <p ref={messageRef} className="mt-1.5 text-sm font-normal text-navy-fg/85">
+          <p ref={messageRef} className="mt-1.5 text-sm font-normal text-fg-secondary">
             {words.map((word, index) => (
               <Fragment key={`${word}-${index}`}>
                 {index > 0 ? " " : null}
@@ -139,9 +138,9 @@ export function AssistantCard({ input, isLoading, onSelect }: AssistantCardProps
                   <button
                     type="button"
                     onClick={() => onSelect(item.id)}
-                    className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-navy-fg transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer"
+                    className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-surface-muted px-3 py-1 text-xs font-semibold text-fg transition-colors hover:bg-accent-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer"
                   >
-                    <span className="text-navy-muted">{item.startTime}</span>
+                    <span className="font-semibold text-accent">{item.startTime}</span>
                     <span className="truncate">{item.title}</span>
                   </button>
                 </li>

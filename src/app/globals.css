@@ -2,50 +2,50 @@
 
 :root {
   color-scheme: light;
-  --canvas: light-dark(#EEF2F6, #171B34);
-  --surface: light-dark(#FFFFFF, #1F2444);
-  --surface-muted: light-dark(#F8FAFC, #262C52);
-  --line: light-dark(#E4E9F2, #323A68);
-  --line-strong: light-dark(#D5DCE8, #3F4880);
-  --fg: light-dark(#1A1D26, #ECEFF7);
-  --fg-secondary: light-dark(#5F6B85, #BAC2DC);
-  --fg-muted: light-dark(#8F9BB3, #8F9BB8);
+  --canvas: light-dark(#EEF2F6, #16181D);
+  --surface: light-dark(#FFFFFF, #1E2026);
+  --surface-muted: light-dark(#F8FAFC, #25282F);
+  --line: light-dark(#E4E9F2, #2E323A);
+  --line-strong: light-dark(#D5DCE8, #3A3F49);
+  --fg: light-dark(#1A1D26, #ECEEF2);
+  --fg-secondary: light-dark(#5F6B85, #B3B8C2);
+  --fg-muted: light-dark(#8F9BB3, #8A909B);
   --accent: light-dark(#3B82F6, #6EA8FF);
   --accent-strong: light-dark(#2563EB, #8DBBFF);
-  --accent-soft: light-dark(#EDF2FE, #263465);
-  --accent-fg: light-dark(#FFFFFF, #10142B);
+  --accent-soft: light-dark(#EDF2FE, #1F2733);
+  --accent-fg: light-dark(#FFFFFF, #0F1115);
   --berry: light-dark(#DE3B75, #F27BA6);
-  --berry-soft: light-dark(#FDECEF, #43263F);
-  --navy: light-dark(#1E255E, #2C3577);
+  --berry-soft: light-dark(#FDECEF, #3A2530);
+  --navy: light-dark(#1E255E, #262A33);
   --navy-fg: #FFFFFF;
-  --navy-muted: light-dark(#AEB8E6, #C3CBF2);
+  --navy-muted: light-dark(#AEB8E6, #B3B8C2);
   --media-bg: #0E0E10;
   --success: light-dark(#10B981, #4ADE9B);
   --status-todo: light-dark(#3B82F6, #6EA8FF);
   --status-progress: light-dark(#DE3B75, #F27BA6);
   --status-done: light-dark(#1E255E, #9AA6FF);
-  --habit-art: light-dark(#EDF2FE, #263465);
-  --habit-lavender-bg: light-dark(#EDF2FE, #263465);
+  --habit-art: light-dark(#EDF2FE, #1F2733);
+  --habit-lavender-bg: light-dark(#EDF2FE, #1E2A3D);
   --habit-lavender-icon: light-dark(#3B82F6, #9CC3FF);
-  --habit-rose-bg: light-dark(#FDECEF, #43263F);
+  --habit-rose-bg: light-dark(#FDECEF, #3A2530);
   --habit-rose-icon: light-dark(#DE3B75, #F7A1C2);
-  --habit-navy-bg: light-dark(#1E255E, #2C3577);
+  --habit-navy-bg: light-dark(#1E255E, #262A33);
   --habit-navy-icon: #FFFFFF;
-  --habit-peach-bg: light-dark(#FFF1E6, #45311F);
+  --habit-peach-bg: light-dark(#FFF1E6, #3A2D22);
   --habit-peach-icon: light-dark(#F97316, #FDC08A);
-  --habit-mint-bg: light-dark(#E7F8F0, #1D4034);
+  --habit-mint-bg: light-dark(#E7F8F0, #1D3329);
   --habit-mint-icon: light-dark(#10B981, #86E8C0);
-  --tag-blue-bg: light-dark(#EDF2FE, #263465);
+  --tag-blue-bg: light-dark(#EDF2FE, #1E2A3D);
   --tag-blue-fg: light-dark(#3B82F6, #9CC3FF);
-  --tag-pink-bg: light-dark(#FDECEF, #43263F);
+  --tag-pink-bg: light-dark(#FDECEF, #3A2530);
   --tag-pink-fg: light-dark(#DE3B75, #F7A1C2);
-  --tag-purple-bg: light-dark(#F1ECFE, #332B5E);
+  --tag-purple-bg: light-dark(#F1ECFE, #2C2840);
   --tag-purple-fg: light-dark(#7C5CFA, #C3B4FF);
-  --tag-orange-bg: light-dark(#FFF1E6, #45311F);
+  --tag-orange-bg: light-dark(#FFF1E6, #3A2D22);
   --tag-orange-fg: light-dark(#F97316, #FDC08A);
-  --tag-green-bg: light-dark(#E7F8F0, #1D4034);
+  --tag-green-bg: light-dark(#E7F8F0, #1D3329);
   --tag-green-fg: light-dark(#10B981, #86E8C0);
-  --tag-gray-bg: light-dark(#EEF2F6, #2C3358);
+  --tag-gray-bg: light-dark(#EEF2F6, #22262E);
   --tag-gray-fg: light-dark(#5F6B85, #C0C8E0);
 }
 
@@ -356,9 +356,6 @@ body {
     rotate: 90deg;
   }
 
-  .theme-seg[aria-pressed="true"] {
-    animation: pop 220ms ease-out;
-  }
   .theme-seg .sun-icon,
   .theme-seg .moon-icon {
     transition: rotate 200ms ease-out;
@@ -370,8 +367,7 @@ body {
     rotate: -15deg;
   }
 
-  .switch-thumb[data-checked="true"],
-  [role="radio"][aria-checked="true"] {
+  .switch-thumb[data-checked="true"] {
     animation: pop 220ms ease-out;
   }
 

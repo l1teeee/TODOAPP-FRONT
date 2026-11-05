@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useActivities } from "@/features/activities/api/use-activities";
 import { ActivityActionsMenu } from "@/features/activities/components/activity-actions-menu";
 import { ActivityFormDialog } from "@/features/activities/components/activity-form-dialog";
@@ -98,7 +98,7 @@ export function DashboardView({ view }: DashboardViewProps) {
   const tasks =
     activities?.filter((item) => item.kind === "task") ?? [];
 
-  const selectedId = selectedParam ?? reminders[0]?.id ?? null;
+  const selectedId = selectedParam;
 
   const briefInput: DailyBriefInput = {
     firstName,
@@ -115,9 +115,23 @@ export function DashboardView({ view }: DashboardViewProps) {
     })),
   };
 
-  const { open: openDetailPanel } = useDetailPanelState();
+  const { state: detailPanelState, open: openDetailPanel } =
+    useDetailPanelState();
+  // The id of a selection whose URL update has not landed yet, so a rapid
+  // second click on the same card is ignored.
+  const pendingSelectionRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    pendingSelectionRef.current = null;
+  }, [selectedParam]);
 
   const handleSelect = (id: string) => {
+    const currentId = pendingSelectionRef.current ?? selectedParam;
+    if (id === currentId) {
+      if (detailPanelState === "closed") openDetailPanel();
+      return;
+    }
+    pendingSelectionRef.current = id;
     openDetailPanel();
     setParam("activity", id);
   };

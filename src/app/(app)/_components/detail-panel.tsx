@@ -1,15 +1,11 @@
 "use client";
 
 import { FileText } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { useRef } from "react";
-import {
-  useActivities,
-  useActivity,
-  useUpdateActivity,
-} from "@/features/activities/api/use-activities";
+import { useRouter } from "next/navigation";
+import { useRef, useSyncExternalStore } from "react";
+import { useActivity, useUpdateActivity } from "@/features/activities/api/use-activities";
 import { ActivityDetailCard } from "@/features/activities/components/activity-detail-card";
-import type { Activity, ActivityView } from "@/features/activities/model/activity";
+import type { Activity } from "@/features/activities/model/activity";
 import { useSignOut } from "@/features/auth/api/use-auth";
 import { useLists } from "@/features/lists/api/use-lists";
 import { ListLabel } from "@/features/lists/components/list-label";
@@ -28,14 +24,6 @@ import { Sheet } from "@/shared/ui/sheet";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { useDashboardParams } from "./use-dashboard-params";
 import { useDetailPanelState } from "./use-detail-panel-state";
-
-function resolveViewFromPathname(pathname: string): ActivityView {
-  if (pathname.startsWith("/tomorrow")) return "tomorrow";
-  if (pathname.startsWith("/next-7-days")) return "next-7-days";
-  if (pathname.startsWith("/all")) return "all";
-  if (pathname.startsWith("/inbox")) return "inbox";
-  return "today";
-}
 
 function DetailSkeleton() {
   return (
@@ -146,17 +134,46 @@ function DetailBody({ activity }: { activity: Activity | null }) {
   );
 }
 
-export function DetailPanel() {
-  const pathname = usePathname();
+const WIDE_QUERY = "(min-width: 1280px)";
+
+function subscribeWide(onChange: () => void): () => void {
+  const query = window.matchMedia(WIDE_QUERY);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+}
+
+// The panel renders as the inline column at xl and up and as a drawer below,
+// never both, so only one instance can exist.
+function useIsWide(): boolean {
+  return useSyncExternalStore(
+    subscribeWide,
+    () => window.matchMedia(WIDE_QUERY).matches,
+    () => false,
+  );
+}
+
+function useSelectedActivity() {
+  const { activity: activityParam, setParam } = useDashboardParams();
+  const { data: activity, isLoading: isDetailLoading } =
+    useActivity(activityParam);
+  return {
+    activityParam,
+    setParam,
+    activity: activity ?? null,
+    isLoading: activityParam !== null && isDetailLoading,
+  };
+}
+
+function InlineDetailPanel() {
   const router = useRouter();
   const signOutMutation = useSignOut();
-  const view = resolveViewFromPathname(pathname);
   const asideRef = useRef<HTMLElement>(null);
   const expandedRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
   const { state: panelState, hydrated } = useDetailPanelState();
   const collapsed = panelState === "closed";
   const previousCollapsed = useRef<boolean | null>(null);
+  const { activity, isLoading } = useSelectedActivity();
   useShellEntrance(asideRef, { x: 16, delay: 0.1 });
 
   // Cross-fades the full panel and the 72 px rail; the stored state is
@@ -203,8 +220,6 @@ export function DetailPanel() {
     },
     { dependencies: [collapsed, hydrated] },
   );
-  const { q, list, tag, activity: activityParam, setParam } =
-    useDashboardParams();
 
   const handleSignOut = () => {
     signOutMutation.mutate(undefined, {
@@ -214,85 +229,64 @@ export function DetailPanel() {
     });
   };
 
-  const { data: viewActivities, isLoading: isViewLoading } = useActivities({
-    view,
-    listId: list ?? undefined,
-    tagId: tag ?? undefined,
-    q: q || undefined,
-  });
+  return (
+    <aside
+      ref={asideRef}
+      data-motion="pending"
+      aria-label="Activity details"
+      aria-busy={isLoading}
+      className="relative block h-full w-[320px] shrink-0 border-l border-line bg-surface"
+    >
+      <div
+        ref={expandedRef}
+        inert={collapsed}
+        className="scroll-soft absolute inset-y-0 left-0 flex w-[320px] flex-col overflow-y-auto overscroll-contain p-5"
+      >
+        <div className="mb-6 flex items-center justify-between gap-2">
+          <ThemeToggle />
+          <UserMenu onSignOut={handleSignOut} />
+        </div>
 
-  const firstReminder =
-    viewActivities?.find((item) => item.kind === "reminder") ?? null;
-  const effectiveId = activityParam ?? firstReminder?.id ?? null;
+        {isLoading ? <DetailSkeleton /> : <DetailBody activity={activity} />}
+      </div>
 
-  const { data: fetchedActivity, isLoading: isDetailLoading } =
-    useActivity(effectiveId);
+      <div
+        ref={railRef}
+        inert={!collapsed}
+        className="invisible absolute inset-y-0 left-0 flex w-[72px] flex-col items-center gap-4 py-5"
+      >
+        <UserMenu onSignOut={handleSignOut} compact />
+        <ThemeToggleButton />
+      </div>
+    </aside>
+  );
+}
 
-  const resolvedActivity =
-    fetchedActivity ??
-    viewActivities?.find((item) => item.id === effectiveId) ??
-    null;
-
-  const isLoading = isViewLoading || (effectiveId !== null && isDetailLoading);
+function DrawerDetailPanel() {
+  const { activityParam, setParam, activity, isLoading } =
+    useSelectedActivity();
 
   return (
-    <>
-      <aside
-        ref={asideRef}
-        data-motion="pending"
-        aria-label="Activity details"
-        aria-busy={isLoading}
-        className="relative hidden xl:block xl:h-full xl:w-[320px] xl:shrink-0 xl:border-l xl:border-line xl:bg-surface"
-      >
-        <div
-          ref={expandedRef}
-          inert={collapsed}
-          className="scroll-soft absolute inset-y-0 left-0 flex w-[320px] flex-col overflow-y-auto overscroll-contain p-5"
-        >
-          <div className="mb-6 flex items-center justify-between gap-2">
-            <ThemeToggle />
-            <UserMenu onSignOut={handleSignOut} />
-          </div>
-
-          {isLoading ? (
-            <DetailSkeleton />
-          ) : (
-            <DetailBody activity={resolvedActivity} />
-          )}
-        </div>
-
-        <div
-          ref={railRef}
-          inert={!collapsed}
-          className="invisible absolute inset-y-0 left-0 flex w-[72px] flex-col items-center gap-4 py-5"
-        >
-          <UserMenu onSignOut={handleSignOut} compact />
-          <ThemeToggleButton />
-        </div>
-      </aside>
-
-      <div className="xl:hidden">
-        <Sheet
-          open={activityParam !== null}
-          onOpenChange={(open) => {
-            if (!open) {
-              setParam("activity", null);
-            }
-          }}
-          side="right"
-          title={resolvedActivity?.title ?? "Activity details"}
-          description="Activity details and checklist"
-          className="p-4"
-        >
-          <div className="flex h-full flex-col pt-2">
-            {isDetailLoading ? (
-              <DetailSkeleton />
-            ) : (
-              <DetailBody activity={resolvedActivity} />
-            )}
-          </div>
-        </Sheet>
+    <Sheet
+      open={activityParam !== null}
+      onOpenChange={(open) => {
+        if (!open) {
+          setParam("activity", null);
+        }
+      }}
+      side="right"
+      title={activity?.title ?? "Activity details"}
+      description="Activity details and checklist"
+      className="p-4"
+    >
+      <div className="flex h-full flex-col pt-2">
+        {isLoading ? <DetailSkeleton /> : <DetailBody activity={activity} />}
       </div>
-    </>
+    </Sheet>
   );
+}
+
+export function DetailPanel() {
+  const isWide = useIsWide();
+  return isWide ? <InlineDetailPanel /> : <DrawerDetailPanel />;
 }

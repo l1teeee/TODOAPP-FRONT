@@ -11,21 +11,23 @@ const PLAYLIST = [
 ] as const;
 
 const CROSSFADE_SECONDS = 0.8;
-const VIDEO_QUERIES = [
-  "(min-width: 1024px)",
-  NO_REDUCED_MOTION,
-] as const;
+const LARGE_SCREEN = "(min-width: 1024px)";
 
-function subscribeVideoQueries(onChange: () => void): () => void {
-  const lists = VIDEO_QUERIES.map((query) => window.matchMedia(query));
+type MediaMode = "none" | "static" | "play";
+
+function subscribeMediaMode(onChange: () => void): () => void {
+  const lists = [LARGE_SCREEN, NO_REDUCED_MOTION].map((query) =>
+    window.matchMedia(query),
+  );
   for (const list of lists) list.addEventListener("change", onChange);
   return () => {
     for (const list of lists) list.removeEventListener("change", onChange);
   };
 }
 
-function videosAllowed(): boolean {
-  return VIDEO_QUERIES.every((query) => window.matchMedia(query).matches);
+function getMediaMode(): MediaMode {
+  if (!window.matchMedia(LARGE_SCREEN).matches) return "none";
+  return window.matchMedia(NO_REDUCED_MOTION).matches ? "play" : "static";
 }
 
 export interface AuthMediaCardProps {
@@ -196,90 +198,45 @@ function VideoLoop({ onFail }: VideoLoopProps) {
   );
 }
 
-const BLOB_BASE = "absolute rounded-full blur-3xl";
-
 export function AuthMediaCard({ className }: AuthMediaCardProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const videosEnabled = useSyncExternalStore(
-    subscribeVideoQueries,
-    videosAllowed,
-    () => false,
+  const mode = useSyncExternalStore(
+    subscribeMediaMode,
+    getMediaMode,
+    (): MediaMode => "none",
   );
   const [videoFailed, setVideoFailed] = useState(false);
 
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia();
-      mm.add(NO_REDUCED_MOTION, () => {
-        const drift = (
-          selector: string,
-          vars: { x: number; y: number; scale: number; duration: number },
-        ) => {
-          gsap.to(selector, {
-            x: vars.x,
-            y: vars.y,
-            scale: vars.scale,
-            duration: vars.duration,
-            ease: "sine.inOut",
-            repeat: -1,
-            yoyo: true,
-          });
-        };
-        drift("[data-blob='accent']", { x: 90, y: 60, scale: 1.2, duration: 16 });
-        drift("[data-blob='berry']", { x: -80, y: -70, scale: 1.15, duration: 20 });
-        drift("[data-blob='lavender']", { x: 60, y: -90, scale: 1.25, duration: 12 });
-      });
-      return () => mm.revert();
-    },
-    { scope: cardRef },
-  );
-
   return (
     <div
-      ref={cardRef}
       className={cn(
         "relative h-full w-full overflow-hidden rounded-[40px] bg-navy",
         className,
       )}
     >
-      <div aria-hidden="true" className="absolute inset-0 overflow-hidden">
-        <div
-          data-blob="accent"
-          className={cn(
-            BLOB_BASE,
-            "-left-24 top-10 h-[28rem] w-[28rem] bg-accent/60",
-          )}
-        />
-        <div
-          data-blob="berry"
-          className={cn(
-            BLOB_BASE,
-            "-right-20 top-1/3 h-[26rem] w-[26rem] bg-berry/50",
-          )}
-        />
-        <div
-          data-blob="lavender"
-          className={cn(
-            BLOB_BASE,
-            "bottom-0 left-1/4 h-[24rem] w-[24rem] bg-tag-purple-fg/50",
-          )}
-        />
-      </div>
-
-      {videosEnabled && !videoFailed ? (
+      {mode === "play" && !videoFailed ? (
         <VideoLoop onFail={() => setVideoFailed(true)} />
       ) : null}
+      {mode === "static" || (mode === "play" && videoFailed) ? (
+        <video
+          aria-hidden="true"
+          muted
+          playsInline
+          preload="metadata"
+          src={`${PLAYLIST[0]}#t=0.001`}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      ) : null}
 
-      <div aria-hidden="true" className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/20 to-transparent" />
-        <div className="absolute inset-0 opacity-[0.06] [background-image:radial-gradient(var(--color-navy-fg)_1px,transparent_1px)] [background-size:3px_3px]" />
-      </div>
+      <div
+        aria-hidden="true"
+        className="film-grain pointer-events-none absolute -inset-1/2 opacity-[0.12] mix-blend-overlay"
+      />
 
       <div className="absolute bottom-0 left-0 right-0 p-10 xl:p-12">
-        <h2 className="max-w-[18ch] text-[44px] font-bold leading-[1.08] tracking-tight text-navy-fg">
+        <h2 className="text-shadow-soft max-w-[18ch] text-[44px] font-bold leading-[1.08] tracking-tight text-navy-fg">
           Plan your habits, reminders and tasks in one place.
         </h2>
-        <p className="mt-4 text-base text-navy-fg/70">
+        <p className="text-shadow-soft mt-4 text-base text-navy-fg/70">
           Your day, organized and calm.
         </p>
       </div>

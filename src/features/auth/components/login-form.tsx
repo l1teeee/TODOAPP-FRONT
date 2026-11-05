@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Mail } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useRef, useState, type FormEvent } from "react";
@@ -9,7 +9,7 @@ import { Button } from "@/shared/ui/button";
 import { Field } from "@/shared/ui/field";
 import { setRememberMe } from "@/shared/auth/supabase-client";
 import { Input } from "@/shared/ui/input";
-import { Switch } from "@/shared/ui/switch";
+import { Checkbox } from "@/shared/ui/checkbox";
 import { useSignIn } from "../api/use-auth";
 import {
   authErrorMessage,
@@ -22,7 +22,7 @@ import {
   validatePasswordField,
   type LoginFieldErrors,
 } from "../model/auth-validation";
-import { AuthCard } from "./auth-card";
+import { AuthCard, AuthDivider, authSecondaryLinkClass } from "./auth-card";
 import { PasswordField } from "./password-field";
 
 export function LoginForm() {
@@ -77,12 +77,7 @@ export function LoginForm() {
       subtitle="Log in to continue with your activities."
       footer={
         <>
-          <p>
-            New here? <Link href="/register">Create an account</Link>
-          </p>
-          <p>
-            Prefer a code? <Link href="/login/code">Email me a login code</Link>
-          </p>
+          Don&apos;t have an account? <Link href="/register">Create one</Link>
         </>
       }
     >
@@ -108,7 +103,6 @@ export function LoginForm() {
           <Input
             ref={emailRef}
             type="email"
-            leadingIcon={<Mail className="h-4 w-4" />}
             autoComplete="email"
             placeholder="you@example.com"
             value={email}
@@ -146,16 +140,25 @@ export function LoginForm() {
           }}
         />
 
-        <div className="flex items-center gap-3">
-          <Switch
-            id={rememberId}
-            checked={remember}
-            onCheckedChange={setRemember}
-            disabled={signInMutation.isPending}
-          />
-          <label htmlFor={rememberId} className="cursor-pointer text-sm text-fg">
-            Remember me
+        <div className="flex items-center justify-between gap-3">
+          <label
+            htmlFor={rememberId}
+            className="flex cursor-pointer items-center gap-2 text-[13px] font-medium text-fg"
+          >
+            <Checkbox
+              id={rememberId}
+              checked={remember}
+              onChange={(event) => setRemember(event.target.checked)}
+              disabled={signInMutation.isPending}
+            />
+            <span>Remember me</span>
           </label>
+          <Link
+            href="/forgot-password"
+            className="text-[13px] font-semibold text-accent hover:underline"
+          >
+            Forgot password?
+          </Link>
         </div>
 
         <Button
@@ -170,11 +173,10 @@ export function LoginForm() {
           <span>Log in</span>
         </Button>
 
-        <Link
-          href="/forgot-password"
-          className="inline-block text-sm font-semibold text-accent hover:underline"
-        >
-          Forgot password?
+        <AuthDivider />
+
+        <Link href="/login/code" className={authSecondaryLinkClass}>
+          Email me a login code
         </Link>
       </form>
     </AuthCard>

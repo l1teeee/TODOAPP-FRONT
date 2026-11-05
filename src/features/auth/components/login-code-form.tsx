@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Mail } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState, type FormEvent } from "react";
@@ -15,7 +15,7 @@ import {
   type AuthErrorCode,
 } from "../model/auth-error";
 import { validateEmailField } from "../model/auth-validation";
-import { AuthCard } from "./auth-card";
+import { AuthCard, AuthDivider, authSecondaryLinkClass } from "./auth-card";
 
 export function LoginCodeForm() {
   const router = useRouter();
@@ -57,12 +57,9 @@ export function LoginCodeForm() {
       title="Log in with a code"
       subtitle="Enter your email and we will send you a 6-digit code."
       footer={
-        <Link
-          href="/login"
-          className="font-semibold text-accent hover:underline"
-        >
-          Use your password instead
-        </Link>
+        <>
+          Don&apos;t have an account? <Link href="/register">Create one</Link>
+        </>
       }
     >
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
@@ -74,7 +71,6 @@ export function LoginCodeForm() {
           <Input
             ref={emailRef}
             type="email"
-            leadingIcon={<Mail className="h-4 w-4" />}
             autoComplete="email"
             placeholder="you@example.com"
             value={email}
@@ -97,6 +93,12 @@ export function LoginCodeForm() {
           ) : null}
           <span>Send code</span>
         </Button>
+
+        <AuthDivider />
+
+        <Link href="/login" className={authSecondaryLinkClass}>
+          Use your password instead
+        </Link>
       </form>
     </AuthCard>
   );

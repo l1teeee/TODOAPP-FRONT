@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, EyeOff, Lock } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { forwardRef, useId, useState, type InputHTMLAttributes } from "react";
 import { cn } from "@/shared/lib/cn";
 import { Field } from "@/shared/ui/field";
@@ -33,7 +33,6 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
             id={controlId}
             type={visible ? "text" : "password"}
             invalid={Boolean(error)}
-            leadingIcon={<Lock className="h-4 w-4" />}
             aria-describedby={describedBy}
             disabled={disabled}
             className={cn("pr-10", className)}

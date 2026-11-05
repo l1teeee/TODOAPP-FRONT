@@ -15,14 +15,28 @@ export interface AuthCardProps {
   className?: string;
 }
 
-// Auth inputs and the submit button are 48 px tall with 12 px radius; the OTP
+// Auth inputs and the submit button are 44 px tall with 10 px radius; the OTP
 // boxes (maxlength 1) and checkboxes keep their own sizes.
 const FORM_SIZING = [
-  "[&_input[type=email]]:h-12 [&_input[type=email]]:rounded-xl",
-  "[&_input[type=password]]:h-12 [&_input[type=password]]:rounded-xl",
-  "[&_input[type=text]:not([maxlength='1'])]:h-12 [&_input[type=text]:not([maxlength='1'])]:rounded-xl",
-  "[&_button[type=submit]]:h-12 [&_button[type=submit]]:rounded-xl",
+  "[&_input[type=email]]:h-11 [&_input[type=email]]:rounded-[10px]",
+  "[&_input[type=password]]:h-11 [&_input[type=password]]:rounded-[10px]",
+  "[&_input[type=text]:not([maxlength='1'])]:h-11 [&_input[type=text]:not([maxlength='1'])]:rounded-[10px]",
+  "[&_button[type=submit]]:h-11 [&_button[type=submit]]:rounded-[10px]",
+  "[&_label]:text-[13px] [&_label]:font-medium",
 ].join(" ");
+
+export const authSecondaryLinkClass =
+  "inline-flex h-11 w-full items-center justify-center rounded-[10px] border border-line bg-surface text-sm font-medium text-fg transition-colors hover:border-line-strong hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent";
+
+export function AuthDivider() {
+  return (
+    <div className="flex items-center gap-3 text-xs text-fg-muted" role="separator">
+      <span className="h-px flex-1 bg-line" />
+      <span>or</span>
+      <span className="h-px flex-1 bg-line" />
+    </div>
+  );
+}
 
 export function AuthCard({
   title,
@@ -39,26 +53,26 @@ export function AuthCard({
     <div
       ref={cardRef}
       data-motion="pending"
-      className={cn("w-full max-w-[450px]", className)}
+      className={cn("w-full max-w-[380px]", className)}
     >
-      <div className="flex items-center gap-3">
-        <BrandMark size={40} variant={resolved === "dark" ? "reverse" : "color"} />
-        <span className="text-[15px] font-semibold text-fg">TODO App</span>
+      <div className="flex items-center gap-2.5">
+        <BrandMark size={28} variant={resolved === "dark" ? "reverse" : "color"} />
+        <span className="text-[14px] font-semibold text-fg">TODO App</span>
       </div>
 
-      <div className="mb-8 mt-10">
-        <h1 className="text-[40px] font-bold leading-[1.1] tracking-tight text-fg">
+      <div className="mb-8 mt-12">
+        <h1 className="text-[30px] font-bold leading-[1.15] tracking-tight text-fg">
           {title}
         </h1>
         {subtitle ? (
-          <p className="mt-3 text-[15px] text-fg-secondary">{subtitle}</p>
+          <p className="mt-2 text-[14px] text-fg-secondary">{subtitle}</p>
         ) : null}
       </div>
 
       <div className={FORM_SIZING}>{children}</div>
 
       {footer ? (
-        <div className="mt-6 space-y-1.5 rounded-2xl border border-line bg-surface px-5 py-4 text-sm text-fg-secondary [&_a]:font-semibold [&_a]:text-accent [&_a]:hover:underline">
+        <div className="mt-8 text-center text-sm text-fg-secondary [&_a]:font-semibold [&_a]:text-accent [&_a]:hover:underline">
           {footer}
         </div>
       ) : null}

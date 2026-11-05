@@ -90,7 +90,7 @@ export function MeshGradientSurface({
       <div
         className={cn(
           "absolute inset-0",
-          resolved === "dark" ? "bg-black/30" : "bg-white/35",
+          resolved === "dark" ? "bg-black/30" : "bg-white/15",
         )}
       />
     </div>

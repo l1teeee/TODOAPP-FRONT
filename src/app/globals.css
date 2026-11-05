@@ -274,6 +274,36 @@ html.theme-fading *::after {
   text-shadow: 0 2px 12px color-mix(in srgb, var(--navy) 45%, transparent);
 }
 
+@keyframes orb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orb-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .assistant-orb {
+    animation: orb-breathe 4s ease-in-out infinite;
+  }
+
+  .assistant-orb-spin {
+    animation: orb-spin 8s linear infinite;
+  }
+
+  .assistant-orb-spin-fast {
+    animation-duration: 2.5s;
+  }
+}
+
 @keyframes caret-blink {
   0%,
   49% {

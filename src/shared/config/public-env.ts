@@ -54,7 +54,7 @@ export const publicEnv = {
   },
   get sentryTracesSampleRate(): number {
     const value = process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE?.trim();
-    if (!value) return 1;
+    if (!value) return 0.2;
     const rate = Number(value);
     if (!Number.isFinite(rate) || rate < 0 || rate > 1) {
       throw new Error("NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE must be a number between 0 and 1");

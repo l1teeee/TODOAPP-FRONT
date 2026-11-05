@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Inter_Tight } from "next/font/google";
+import { Nunito } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
 
-const interTight = Inter_Tight({
+const nunito = Nunito({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  variable: "--font-inter-tight",
+  weight: ["400", "600", "700", "800"],
+  variable: "--font-nunito",
 });
 
 export const metadata: Metadata = {
@@ -19,8 +20,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={interTight.variable}>
-      <body>{children}</body>
+    <html lang="en" className={nunito.variable}>
+      <body className="bg-canvas text-fg font-sans antialiased">
+        <noscript>
+          <style>{'[data-motion="pending"]{opacity:1 !important}'}</style>
+        </noscript>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

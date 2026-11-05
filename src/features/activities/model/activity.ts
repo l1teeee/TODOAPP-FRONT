@@ -23,6 +23,7 @@ export interface Activity {
   listId?: string | null;
   tagIds?: string[];
   completedAt: string | null;
+  deletedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }

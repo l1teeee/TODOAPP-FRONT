@@ -1,8 +1,10 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { ActivityView } from "@/features/activities/model/activity";
+import { useSignOut } from "@/features/auth/api/use-auth";
 import { useLists } from "@/features/lists/api/use-lists";
 import { UserMenu } from "@/features/profile/components/user-menu";
 import { useTags } from "@/features/tags/api/use-tags";
@@ -25,9 +27,19 @@ export interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ view, onNewActivity }: DashboardHeaderProps) {
+  const router = useRouter();
+  const signOutMutation = useSignOut();
   const { q, list: listId, tag: tagId, setParam } = useDashboardParams();
   const { data: lists } = useLists();
   const { data: tags } = useTags();
+
+  const handleSignOut = () => {
+    signOutMutation.mutate(undefined, {
+      onSuccess: () => {
+        router.push("/login");
+      },
+    });
+  };
 
   const [draft, setDraft] = useState<{ baseQ: string; value: string }>({
     baseQ: q,
@@ -77,7 +89,7 @@ export function DashboardHeader({ view, onNewActivity }: DashboardHeaderProps) {
         />
         <div className="flex items-center gap-3 xl:hidden">
           <ThemeToggle />
-          <UserMenu />
+          <UserMenu onSignOut={handleSignOut} />
         </div>
       </div>
 

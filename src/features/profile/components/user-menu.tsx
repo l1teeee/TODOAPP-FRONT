@@ -13,7 +13,11 @@ import {
 import { Skeleton } from "@/shared/ui/skeleton";
 import { useProfile } from "../api/use-profile";
 
-export function UserMenu() {
+export interface UserMenuProps {
+  onSignOut: () => void;
+}
+
+export function UserMenu({ onSignOut }: UserMenuProps) {
   const { data: profile, isLoading } = useProfile();
 
   if (isLoading) {
@@ -52,11 +56,9 @@ export function UserMenu() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/login">
-            <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
-            <span>Log out</span>
-          </Link>
+        <DropdownMenuItem onSelect={onSignOut}>
+          <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
+          <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

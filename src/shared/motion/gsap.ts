@@ -1,9 +1,8 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { Flip } from "gsap/Flip";
-import { TextPlugin } from "gsap/TextPlugin";
 
-gsap.registerPlugin(useGSAP, Flip, TextPlugin);
+gsap.registerPlugin(useGSAP, Flip);
 
 export const NO_REDUCED_MOTION = "(prefers-reduced-motion: no-preference)";
 

@@ -6,13 +6,12 @@ import { cn } from "@/shared/lib/cn";
 import { useTheme } from "@/shared/theme/use-theme";
 
 // Hex values here are shader inputs, not CSS, so they live outside globals.css.
-export const MESH_LIGHT_COLORS = ["#EDF2FE", "#DCE8FF", "#FDECEF", "#FFF1E6", "#E7F8F0"];
-export const MESH_DARK_COLORS = ["#1E2026", "#1F2733", "#3A2530", "#25282F"];
+const MESH_LIGHT_COLORS = ["#EDF2FE", "#DCE8FF", "#FDECEF", "#FFF1E6", "#E7F8F0"];
+const MESH_DARK_COLORS = ["#1E2026", "#1F2733", "#3A2530", "#25282F"];
+
+const MESH_SPEED = 0.4;
 
 export interface MeshGradientSurfaceProps {
-  /** Overrides the palette picked from the resolved theme. */
-  colors?: string[];
-  speed?: number;
   className?: string;
 }
 
@@ -22,8 +21,6 @@ interface Size {
 }
 
 export function MeshGradientSurface({
-  colors,
-  speed = 0.4,
   className,
 }: MeshGradientSurfaceProps) {
   const { resolved } = useTheme();
@@ -65,8 +62,7 @@ export function MeshGradientSurface({
     };
   }, []);
 
-  const palette =
-    colors ?? (resolved === "dark" ? MESH_DARK_COLORS : MESH_LIGHT_COLORS);
+  const palette = resolved === "dark" ? MESH_DARK_COLORS : MESH_LIGHT_COLORS;
   const animate = !reducedMotion && inView && tabVisible;
 
   return (
@@ -80,7 +76,7 @@ export function MeshGradientSurface({
           width={size.width}
           height={size.height}
           colors={palette}
-          speed={animate ? speed : 0}
+          speed={animate ? MESH_SPEED : 0}
           distortion={0.8}
           swirl={0.6}
           grainMixer={0}

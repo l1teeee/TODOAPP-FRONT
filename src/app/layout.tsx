@@ -10,6 +10,7 @@ const nunito = Nunito({
   variable: "--font-nunito",
 });
 
+// Inline constant because it must run before first paint and holds no dynamic data.
 // Static string: marks the document dark before first paint when the stored
 // preference resolves to dark, so the light default never flashes the wrong way.
 const THEME_BOOT_SCRIPT = `(function(){var p=localStorage.getItem("todo-theme");var d=p==="dark"||(p==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(d){var s=document.createElement("style");s.id="theme-boot";s.textContent=":root{color-scheme:dark}";document.head.appendChild(s);}})();`;

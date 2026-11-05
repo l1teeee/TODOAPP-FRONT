@@ -70,32 +70,34 @@ export function AssistantHero({
       mm.add(NO_REDUCED_MOTION, () => {
         setTyping(true);
         if (chips) gsap.set(chips, { autoAlpha: 0 });
-        gsap.fromTo(
-          text,
-          { text: "" },
-          {
-            text: message,
-            duration: message.length / TYPING_CHARACTERS_PER_SECOND,
-            ease: "none",
-            onComplete: () => {
-              setTyping(false);
-              if (chips) {
-                gsap.fromTo(
-                  chips,
-                  { autoAlpha: 0, y: 6 },
-                  {
-                    autoAlpha: 1,
-                    y: 0,
-                    duration: DURATION.base,
-                    ease: EASE.out,
-                    onStart: markWillChange,
-                    clearProps: "all",
-                  },
-                );
-              }
-            },
+        // Writes textContent only; the message can contain user-provided text.
+        const progress = { characters: 0 };
+        text.textContent = "";
+        gsap.to(progress, {
+          characters: message.length,
+          duration: message.length / TYPING_CHARACTERS_PER_SECOND,
+          ease: "none",
+          onUpdate: () => {
+            text.textContent = message.slice(0, Math.round(progress.characters));
           },
-        );
+          onComplete: () => {
+            setTyping(false);
+            if (chips) {
+              gsap.fromTo(
+                chips,
+                { autoAlpha: 0, y: 6 },
+                {
+                  autoAlpha: 1,
+                  y: 0,
+                  duration: DURATION.base,
+                  ease: EASE.out,
+                  onStart: markWillChange,
+                  clearProps: "all",
+                },
+              );
+            }
+          },
+        });
         return () => setTyping(false);
       });
       mm.add("(prefers-reduced-motion: reduce)", () => {

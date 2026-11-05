@@ -15,9 +15,11 @@ import { useProfile } from "../api/use-profile";
 
 export interface UserMenuProps {
   onSignOut: () => void;
+  /** Shows only the avatar as the trigger. */
+  compact?: boolean;
 }
 
-export function UserMenu({ onSignOut }: UserMenuProps) {
+export function UserMenu({ onSignOut, compact = false }: UserMenuProps) {
   const { data: profile, isLoading } = useProfile();
 
   if (isLoading) {
@@ -36,16 +38,21 @@ export function UserMenu({ onSignOut }: UserMenuProps) {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="inline-flex items-center gap-2.5 rounded-full py-1 pl-1 pr-2 text-xs font-semibold text-fg transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer"
+          aria-label={compact ? "Account menu" : undefined}
+          className={compact ? "inline-flex rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer" : "inline-flex items-center gap-2.5 rounded-full py-1 pl-1 pr-2 text-xs font-semibold text-fg transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer"}
         >
-          <Avatar name={displayName} />
-          <span className="max-w-[7rem] truncate text-sm font-semibold text-fg">
-            {displayName}
-          </span>
-          <ChevronDown
-            className="h-4 w-4 text-fg-secondary"
-            aria-hidden="true"
-          />
+          <Avatar name={displayName} className={compact ? "h-9! w-9!" : undefined} />
+          {compact ? null : (
+            <>
+              <span className="max-w-[7rem] truncate text-sm font-semibold text-fg">
+                {displayName}
+              </span>
+              <ChevronDown
+                className="h-4 w-4 text-fg-secondary"
+                aria-hidden="true"
+              />
+            </>
+          )}
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

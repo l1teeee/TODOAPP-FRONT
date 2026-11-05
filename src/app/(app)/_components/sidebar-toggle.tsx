@@ -1,32 +1,22 @@
 "use client";
 
-import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
-import { cn } from "@/shared/lib/cn";
-import { IconButton } from "@/shared/ui/icon-button";
-import { useSidebarState, type SidebarState } from "./use-sidebar-state";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { EdgeHandle } from "./edge-handle";
+import { useSidebarState } from "./use-sidebar-state";
 
-export interface SidebarToggleProps {
-  /** Renders only while the sidebar is in this state. */
-  showWhen?: SidebarState;
-  className?: string;
-}
-
-export function SidebarToggle({ showWhen, className }: SidebarToggleProps) {
+// Straddles the right border of the sidebar (or of the rail once collapsed).
+export function SidebarToggle() {
   const { state, toggle } = useSidebarState();
-
-  if (showWhen && state !== showWhen) return null;
-
   const collapsed = state === "collapsed";
-  const Icon = collapsed ? PanelLeftOpen : PanelLeftClose;
+  const Icon = collapsed ? ChevronRight : ChevronLeft;
 
   return (
-    <span className={cn("hidden lg:inline-flex", className)}>
-      <IconButton
-        label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        onClick={toggle}
-      >
-        <Icon className="h-5 w-5" aria-hidden="true" />
-      </IconButton>
-    </span>
+    <EdgeHandle
+      label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      onClick={toggle}
+      className="right-0 hidden translate-x-1/2 lg:inline-flex"
+    >
+      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+    </EdgeHandle>
   );
 }

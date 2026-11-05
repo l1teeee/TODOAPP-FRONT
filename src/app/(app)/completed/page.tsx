@@ -12,6 +12,9 @@ function CompletedFallback() {
   );
 }
 
+// The content depends on the browser auth session, so instant-navigation validation does not apply.
+export const instant = false;
+
 export default function CompletedPage() {
   return (
     <Suspense fallback={<CompletedFallback />}>

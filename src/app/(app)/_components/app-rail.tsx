@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Fragment, useRef } from "react";
+import { useRef } from "react";
 import { ReminderBell } from "@/features/activities/components/reminder-bell";
 import { useSignOut } from "@/features/auth/api/use-auth";
 import { useEnabledModules } from "@/shared/api/use-enabled-modules";
@@ -21,7 +21,6 @@ import {
 } from "@/shared/motion/use-entrance";
 import { useTheme } from "@/shared/theme/use-theme";
 import { BrandMark } from "@/shared/ui/brand-mark";
-import { SidebarToggle } from "./sidebar-toggle";
 
 const TOP_ITEMS = [
   { href: "/today", label: "Today", icon: Home },
@@ -79,29 +78,27 @@ export function AppRail({ onNavigate, className }: AppRailProps) {
         >
           <BrandMark size={36} variant={resolved === "dark" ? "reverse" : "color"} />
         </Link>
-        {TOP_ITEMS.map((item, index) => {
+        {TOP_ITEMS.map((item) => {
           if (item.href === "/summary" && !modules?.includes("summary")) return null;
           const Icon = item.icon;
           const active = pathname === item.href;
           return (
-            <Fragment key={item.href}>
-              <Link
-                href={item.href}
-                onClick={onNavigate}
-                aria-label={item.label}
-                title={item.label}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "icon-anim relative isolate inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-                  active
-                    ? "text-accent"
-                    : "text-fg-secondary hover:bg-surface-muted hover:text-fg",
-                )}
-              >
-                <Icon className="h-5 w-5" aria-hidden="true" />
-              </Link>
-              {index === 0 ? <SidebarToggle /> : null}
-            </Fragment>
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onNavigate}
+              aria-label={item.label}
+              title={item.label}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "icon-anim relative isolate inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                active
+                  ? "text-accent"
+                  : "text-fg-secondary hover:bg-surface-muted hover:text-fg",
+              )}
+            >
+              <Icon className="h-5 w-5" aria-hidden="true" />
+            </Link>
           );
         })}
       </div>

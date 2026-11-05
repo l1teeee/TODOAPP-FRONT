@@ -8,14 +8,7 @@ export type ResolvedTheme = "light" | "dark";
 
 const STORAGE_KEY = "todo-theme";
 const THEME_EVENT = "todo-theme-change";
-const REVEAL_DURATION_MS = 750;
-const REVEAL_EASING = "cubic-bezier(0.65, 0, 0.35, 1)";
-const FADE_CLASS_DURATION_MS = 320;
-
-export interface ThemeOrigin {
-  x: number;
-  y: number;
-}
+const FADE_CLASS_DURATION_MS = 200;
 
 function subscribePreference(onStoreChange: () => void): () => void {
   if (typeof window === "undefined") {
@@ -79,20 +72,7 @@ function commitPreference(next: ThemePreference): void {
   });
 }
 
-function revealFrom(origin: ThemeOrigin): { clipPath: string[] } {
-  const radius = Math.hypot(
-    Math.max(origin.x, window.innerWidth - origin.x),
-    Math.max(origin.y, window.innerHeight - origin.y),
-  );
-  return {
-    clipPath: [
-      `circle(0px at ${origin.x}px ${origin.y}px)`,
-      `circle(${radius}px at ${origin.x}px ${origin.y}px)`,
-    ],
-  };
-}
-
-function applyPreference(next: ThemePreference, origin?: ThemeOrigin): void {
+function applyPreference(next: ThemePreference): void {
   const reducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)",
   ).matches;
@@ -111,32 +91,15 @@ function applyPreference(next: ThemePreference, origin?: ThemeOrigin): void {
     return;
   }
 
-  const transition = document.startViewTransition(() => {
+  document.startViewTransition(() => {
     commitPreference(next);
-  });
-  if (!origin) return;
-
-  void transition.ready.then(() => {
-    const options = {
-      duration: REVEAL_DURATION_MS,
-      easing: REVEAL_EASING,
-      fill: "forwards" as const,
-    };
-    document.documentElement.animate(revealFrom(origin), {
-      ...options,
-      pseudoElement: "::view-transition-new(root)",
-    });
-    document.documentElement.animate(
-      { opacity: [1, 0.85] },
-      { ...options, pseudoElement: "::view-transition-old(root)" },
-    );
   });
 }
 
 export function useTheme(): {
   preference: ThemePreference;
   resolved: ResolvedTheme;
-  setPreference: (p: ThemePreference, origin?: ThemeOrigin) => void;
+  setPreference: (p: ThemePreference) => void;
 } {
   const preference = useSyncExternalStore(
     subscribePreference,
@@ -159,11 +122,11 @@ export function useTheme(): {
   }, [preference]);
 
   const setPreference = useCallback(
-    (next: ThemePreference, origin?: ThemeOrigin) => {
+    (next: ThemePreference) => {
       if (typeof window === "undefined") {
         return;
       }
-      applyPreference(next, origin);
+      applyPreference(next);
     },
     [],
   );

@@ -21,7 +21,6 @@ import {
   useActiveIndicator,
   useShellEntrance,
 } from "@/shared/motion/use-entrance";
-import { SidebarToggle } from "./sidebar-toggle";
 import { useDashboardParams } from "./use-dashboard-params";
 
 const VIEW_LINKS = [
@@ -67,9 +66,6 @@ export function AppSidebar({ onNavigate, className }: AppSidebarProps) {
       )}
     >
       <div className="space-y-6">
-        <div className="flex justify-end pr-3">
-          <SidebarToggle showWhen="expanded" />
-        </div>
         <ul className="space-y-0.5">
           {VIEW_LINKS.map((item) => {
             const Icon = item.icon;

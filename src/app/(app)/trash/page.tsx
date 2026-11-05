@@ -12,6 +12,9 @@ function TrashFallback() {
   );
 }
 
+// The content depends on the browser auth session, so instant-navigation validation does not apply.
+export const instant = false;
+
 export default function TrashPage() {
   return (
     <Suspense fallback={<TrashFallback />}>

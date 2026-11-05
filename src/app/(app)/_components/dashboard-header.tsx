@@ -12,11 +12,7 @@ import { useEnabledModules } from "@/shared/api/use-enabled-modules";
 import { ThemeToggle } from "@/shared/theme/theme-toggle";
 import { Button } from "@/shared/ui/button";
 import { SearchField } from "@/shared/ui/search-field";
-import { cn } from "@/shared/lib/cn";
-import { DetailPanelToggle } from "./detail-panel-toggle";
-import { SidebarToggle } from "./sidebar-toggle";
 import { useDashboardParams } from "./use-dashboard-params";
-import { useDetailPanelState } from "./use-detail-panel-state";
 
 const VIEW_TITLES: Record<ActivityView, string> = {
   today: "Today Activities",
@@ -36,7 +32,6 @@ export function DashboardHeader({ view, onNewActivity }: DashboardHeaderProps) {
   const router = useRouter();
   const signOutMutation = useSignOut();
   const { q, list: listId, tag: tagId, setParam } = useDashboardParams();
-  const { state: detailPanelState } = useDetailPanelState();
   const { data: lists } = useLists();
   const { data: tags } = useTags();
 
@@ -96,13 +91,7 @@ export function DashboardHeader({ view, onNewActivity }: DashboardHeaderProps) {
           placeholder="Search"
           className="flex-1"
         />
-        <div
-          className={cn(
-            "flex items-center gap-3",
-            detailPanelState === "open" && "xl:hidden",
-          )}
-        >
-          <DetailPanelToggle showWhen="closed" />
+        <div className="flex items-center gap-3 xl:hidden">
           <ThemeToggle />
           <UserMenu onSignOut={handleSignOut} />
         </div>
@@ -110,7 +99,6 @@ export function DashboardHeader({ view, onNewActivity }: DashboardHeaderProps) {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <SidebarToggle showWhen="collapsed" />
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-fg">
               {heading}

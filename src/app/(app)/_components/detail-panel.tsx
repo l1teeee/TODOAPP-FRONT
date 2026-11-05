@@ -21,13 +21,13 @@ import { useEnabledModules } from "@/shared/api/use-enabled-modules";
 import { gsap, markWillChange, NO_REDUCED_MOTION, useGSAP } from "@/shared/motion/gsap";
 import { DURATION, EASE } from "@/shared/motion/motion-tokens";
 import { useShellEntrance } from "@/shared/motion/use-entrance";
-import { ThemeToggle } from "@/shared/theme/theme-toggle";
+import { ThemeToggle, ThemeToggleButton } from "@/shared/theme/theme-toggle";
 import { Button } from "@/shared/ui/button";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { Sheet } from "@/shared/ui/sheet";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { DetailPanelToggle } from "./detail-panel-toggle";
 import { useDashboardParams } from "./use-dashboard-params";
+import { useDetailPanelState } from "./use-detail-panel-state";
 
 function resolveViewFromPathname(pathname: string): ActivityView {
   if (pathname.startsWith("/tomorrow")) return "tomorrow";
@@ -152,7 +152,57 @@ export function DetailPanel() {
   const signOutMutation = useSignOut();
   const view = resolveViewFromPathname(pathname);
   const asideRef = useRef<HTMLElement>(null);
+  const expandedRef = useRef<HTMLDivElement>(null);
+  const railRef = useRef<HTMLDivElement>(null);
+  const { state: panelState, hydrated } = useDetailPanelState();
+  const collapsed = panelState === "closed";
+  const previousCollapsed = useRef<boolean | null>(null);
   useShellEntrance(asideRef, { x: 16, delay: 0.1 });
+
+  // Cross-fades the full panel and the 72 px rail; the stored state is
+  // applied without animation on the first run after hydration.
+  useGSAP(
+    () => {
+      const expanded = expandedRef.current;
+      const rail = railRef.current;
+      if (!hydrated || !expanded || !rail) return;
+
+      const changed =
+        previousCollapsed.current !== null &&
+        previousCollapsed.current !== collapsed;
+      previousCollapsed.current = collapsed;
+
+      const showing = collapsed ? rail : expanded;
+      const hiding = collapsed ? expanded : rail;
+      const applyFinalState = () => {
+        gsap.set(showing, { autoAlpha: 1 });
+        gsap.set(hiding, { autoAlpha: 0 });
+      };
+
+      const mm = gsap.matchMedia();
+      mm.add(NO_REDUCED_MOTION, () => {
+        if (!changed) {
+          applyFinalState();
+          return;
+        }
+        gsap.to(hiding, {
+          autoAlpha: 0,
+          duration: 0.15,
+          ease: EASE.out,
+          overwrite: "auto",
+        });
+        gsap.to(showing, {
+          autoAlpha: 1,
+          duration: DURATION.base,
+          delay: 0.2,
+          ease: EASE.out,
+          overwrite: "auto",
+        });
+      });
+      mm.add("(prefers-reduced-motion: reduce)", applyFinalState);
+    },
+    { dependencies: [collapsed, hydrated] },
+  );
   const { q, list, tag, activity: activityParam, setParam } =
     useDashboardParams();
 
@@ -192,21 +242,33 @@ export function DetailPanel() {
         data-motion="pending"
         aria-label="Activity details"
         aria-busy={isLoading}
-        className="hidden xl:flex xl:h-full xl:w-[320px] xl:shrink-0 xl:flex-col xl:border-l xl:border-line xl:bg-surface xl:p-5 xl:overflow-y-auto xl:overscroll-contain scroll-soft"
+        className="relative hidden xl:block xl:h-full xl:w-[320px] xl:shrink-0 xl:border-l xl:border-line xl:bg-surface"
       >
-        <div className="mb-6 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <DetailPanelToggle />
+        <div
+          ref={expandedRef}
+          inert={collapsed}
+          className="scroll-soft absolute inset-y-0 left-0 flex w-[320px] flex-col overflow-y-auto overscroll-contain p-5"
+        >
+          <div className="mb-6 flex items-center justify-between gap-2">
             <ThemeToggle />
+            <UserMenu onSignOut={handleSignOut} />
           </div>
-          <UserMenu onSignOut={handleSignOut} />
+
+          {isLoading ? (
+            <DetailSkeleton />
+          ) : (
+            <DetailBody activity={resolvedActivity} />
+          )}
         </div>
 
-        {isLoading ? (
-          <DetailSkeleton />
-        ) : (
-          <DetailBody activity={resolvedActivity} />
-        )}
+        <div
+          ref={railRef}
+          inert={!collapsed}
+          className="invisible absolute inset-y-0 left-0 flex w-[72px] flex-col items-center gap-4 py-5"
+        >
+          <UserMenu onSignOut={handleSignOut} compact />
+          <ThemeToggleButton />
+        </div>
       </aside>
 
       <div className="xl:hidden">

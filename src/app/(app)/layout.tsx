@@ -21,7 +21,9 @@ import { RequireSession } from "@/shared/auth/auth-guard";
 import { AppRail } from "./_components/app-rail";
 import { AppSidebar } from "./_components/app-sidebar";
 import { DetailPanel } from "./_components/detail-panel";
+import { DetailPanelToggle } from "./_components/detail-panel-toggle";
 import { MobileNav } from "./_components/mobile-nav";
+import { SidebarToggle } from "./_components/sidebar-toggle";
 import { useDetailPanelState } from "./_components/use-detail-panel-state";
 import { useSidebarState } from "./_components/use-sidebar-state";
 
@@ -50,8 +52,10 @@ interface CollapsiblePanelOptions {
   collapsed: boolean;
   hydrated: boolean;
   wrapRef: RefObject<HTMLDivElement | null>;
-  panelRef: RefObject<HTMLDivElement | null>;
+  panelRef?: RefObject<HTMLDivElement | null>;
   width: number;
+  /** Wrapper width when collapsed (0 hides the column). */
+  collapsedWidth?: number;
   /** Horizontal offset (px) the inner panel travels while collapsing. */
   offset: number;
   /** Descendants that stagger in when the panel expands. */
@@ -67,6 +71,7 @@ function useCollapsiblePanel({
   wrapRef,
   panelRef,
   width,
+  collapsedWidth = 0,
   offset,
   itemSelector,
 }: CollapsiblePanelOptions): void {
@@ -75,8 +80,8 @@ function useCollapsiblePanel({
   useGSAP(
     () => {
       const wrap = wrapRef.current;
-      const panel = panelRef.current;
-      if (!hydrated || !wrap || !panel) return;
+      const panel = panelRef?.current ?? null;
+      if (!hydrated || !wrap) return;
 
       const changed =
         previousCollapsed.current !== null &&
@@ -85,11 +90,11 @@ function useCollapsiblePanel({
 
       const applyFinalState = () => {
         if (collapsed) {
-          gsap.set(wrap, { width: 0 });
-          gsap.set(panel, { autoAlpha: 0, x: offset });
+          gsap.set(wrap, { width: collapsedWidth });
+          if (panel) gsap.set(panel, { autoAlpha: 0, x: offset });
         } else {
           gsap.set(wrap, { clearProps: "width" });
-          gsap.set(panel, { clearProps: "all" });
+          if (panel) gsap.set(panel, { clearProps: "all" });
         }
       };
 
@@ -101,23 +106,25 @@ function useCollapsiblePanel({
         }
         if (collapsed) {
           gsap.to(wrap, {
-            width: 0,
+            width: collapsedWidth,
             duration: 0.45,
             ease: EASE.inOut,
             overwrite: "auto",
           });
-          gsap.to(panel, {
-            autoAlpha: 0,
-            x: offset,
-            duration: 0.2,
-            ease: EASE.out,
-            overwrite: "auto",
-          });
+          if (panel) {
+            gsap.to(panel, {
+              autoAlpha: 0,
+              x: offset,
+              duration: 0.2,
+              ease: EASE.out,
+              overwrite: "auto",
+            });
+          }
           return;
         }
         gsap.fromTo(
           wrap,
-          { width: 0 },
+          { width: collapsedWidth },
           {
             width,
             duration: 0.45,
@@ -126,20 +133,22 @@ function useCollapsiblePanel({
             clearProps: "width",
           },
         );
-        gsap.fromTo(
-          panel,
-          { autoAlpha: 0, x: offset },
-          {
-            autoAlpha: 1,
-            x: 0,
-            duration: DURATION.base,
-            delay: 0.15,
-            ease: EASE.out,
-            overwrite: "auto",
-            clearProps: "all",
-          },
-        );
-        if (itemSelector) {
+        if (panel) {
+          gsap.fromTo(
+            panel,
+            { autoAlpha: 0, x: offset },
+            {
+              autoAlpha: 1,
+              x: 0,
+              duration: DURATION.base,
+              delay: 0.15,
+              ease: EASE.out,
+              overwrite: "auto",
+              clearProps: "all",
+            },
+          );
+        }
+        if (panel && itemSelector) {
           gsap.from(panel.querySelectorAll(itemSelector), {
             autoAlpha: 0,
             y: 6,
@@ -165,7 +174,6 @@ function AppShell({ children }: { children: ReactNode }) {
   const sidebarWrapRef = useRef<HTMLDivElement>(null);
   const sidebarPanelRef = useRef<HTMLDivElement>(null);
   const detailWrapRef = useRef<HTMLDivElement>(null);
-  const detailPanelRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
 
   // Animates only the wrapper this layout renders; the page content inside
@@ -211,9 +219,9 @@ function AppShell({ children }: { children: ReactNode }) {
     collapsed: detailPanel.state === "closed",
     hydrated: detailPanel.hydrated,
     wrapRef: detailWrapRef,
-    panelRef: detailPanelRef,
     width: 320,
-    offset: 24,
+    collapsedWidth: 72,
+    offset: 0,
   });
 
   return (
@@ -229,13 +237,16 @@ function AppShell({ children }: { children: ReactNode }) {
 
       <div
         ref={sidebarWrapRef}
-        className="hidden lg:block lg:h-full lg:w-[220px] lg:shrink-0 lg:overflow-hidden"
+        className="relative hidden lg:block lg:h-full lg:w-[220px] lg:shrink-0"
       >
-        <div ref={sidebarPanelRef} className="h-full w-[220px]">
-          <Suspense fallback={<SidebarFallback />}>
-            <AppSidebar />
-          </Suspense>
+        <div className="h-full overflow-hidden">
+          <div ref={sidebarPanelRef} className="h-full w-[220px]">
+            <Suspense fallback={<SidebarFallback />}>
+              <AppSidebar />
+            </Suspense>
+          </div>
         </div>
+        <SidebarToggle />
       </div>
 
       <main className="scroll-soft min-w-0 flex-1 overflow-x-hidden overflow-y-auto bg-canvas">
@@ -251,13 +262,16 @@ function AppShell({ children }: { children: ReactNode }) {
 
       <div
         ref={detailWrapRef}
-        className="xl:h-full xl:w-[320px] xl:shrink-0 xl:overflow-hidden"
+        className="relative xl:h-full xl:w-[320px] xl:shrink-0"
       >
-        <div ref={detailPanelRef} className="xl:h-full xl:w-[320px]">
-          <Suspense fallback={<DetailFallback />}>
-            <DetailPanel />
-          </Suspense>
+        <div className="h-full overflow-hidden">
+          <div className="xl:h-full xl:w-[320px]">
+            <Suspense fallback={<DetailFallback />}>
+              <DetailPanel />
+            </Suspense>
+          </div>
         </div>
+        <DetailPanelToggle />
       </div>
     </div>
   );

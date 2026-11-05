@@ -2,12 +2,7 @@
 
 import { Moon, Sun } from "lucide-react";
 import { cn } from "@/shared/lib/cn";
-import { useTheme, type ThemeOrigin } from "./use-theme";
-
-function centerOf(element: HTMLElement): ThemeOrigin {
-  const rect = element.getBoundingClientRect();
-  return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-}
+import { useTheme } from "./use-theme";
 
 const SEGMENT_CLASSES =
   "theme-seg relative z-10 inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent active:scale-95";
@@ -32,7 +27,7 @@ export function ThemeToggle() {
         type="button"
         aria-label="Light theme"
         aria-pressed={resolved === "light"}
-        onClick={(event) => setPreference("light", centerOf(event.currentTarget))}
+        onClick={() => setPreference("light")}
         className={cn(
           SEGMENT_CLASSES,
           resolved === "light" ? "text-fg" : "text-fg-muted hover:text-fg",
@@ -44,7 +39,7 @@ export function ThemeToggle() {
         type="button"
         aria-label="Dark theme"
         aria-pressed={resolved === "dark"}
-        onClick={(event) => setPreference("dark", centerOf(event.currentTarget))}
+        onClick={() => setPreference("dark")}
         className={cn(
           SEGMENT_CLASSES,
           resolved === "dark" ? "text-fg" : "text-fg-muted hover:text-fg",
@@ -53,5 +48,24 @@ export function ThemeToggle() {
         <Moon className="moon-icon h-4 w-4" aria-hidden="true" />
       </button>
     </div>
+  );
+}
+
+// Single-button variant for narrow rails: swaps Sun and Moon.
+export function ThemeToggleButton() {
+  const { resolved, setPreference } = useTheme();
+  const next = resolved === "dark" ? "light" : "dark";
+  const Icon = resolved === "dark" ? Moon : Sun;
+
+  return (
+    <button
+      type="button"
+      aria-label={next === "dark" ? "Dark theme" : "Light theme"}
+      title={next === "dark" ? "Dark theme" : "Light theme"}
+      onClick={() => setPreference(next)}
+      className="icon-anim inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-line bg-surface-muted text-fg transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+    >
+      <Icon className="h-4 w-4" aria-hidden="true" />
+    </button>
   );
 }

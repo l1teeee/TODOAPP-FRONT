@@ -176,8 +176,8 @@ body {
 
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
+  animation-duration: 250ms;
+  animation-timing-function: ease-out;
 }
 
 html.theme-fading,
@@ -185,11 +185,11 @@ html.theme-fading *,
 html.theme-fading *::before,
 html.theme-fading *::after {
   transition:
-    background-color 300ms ease,
-    color 300ms ease,
-    border-color 300ms ease,
-    fill 300ms ease,
-    stroke 300ms ease !important;
+    background-color 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease,
+    fill 200ms ease,
+    stroke 200ms ease !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

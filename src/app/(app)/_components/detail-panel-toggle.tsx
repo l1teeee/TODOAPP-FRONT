@@ -1,35 +1,22 @@
 "use client";
 
-import { PanelRightClose, PanelRightOpen } from "lucide-react";
-import { cn } from "@/shared/lib/cn";
-import { IconButton } from "@/shared/ui/icon-button";
-import {
-  useDetailPanelState,
-  type DetailPanelState,
-} from "./use-detail-panel-state";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { EdgeHandle } from "./edge-handle";
+import { useDetailPanelState } from "./use-detail-panel-state";
 
-export interface DetailPanelToggleProps {
-  /** Renders only while the panel is in this state. */
-  showWhen?: DetailPanelState;
-  className?: string;
-}
-
-export function DetailPanelToggle({
-  showWhen,
-  className,
-}: DetailPanelToggleProps) {
+// Straddles the left border of the detail panel.
+export function DetailPanelToggle() {
   const { state, toggle } = useDetailPanelState();
-
-  if (showWhen && state !== showWhen) return null;
-
-  const closed = state === "closed";
-  const Icon = closed ? PanelRightOpen : PanelRightClose;
+  const collapsed = state === "closed";
+  const Icon = collapsed ? ChevronLeft : ChevronRight;
 
   return (
-    <span className={cn("hidden xl:inline-flex", className)}>
-      <IconButton label={closed ? "Show details" : "Hide details"} onClick={toggle}>
-        <Icon className="h-5 w-5" aria-hidden="true" />
-      </IconButton>
-    </span>
+    <EdgeHandle
+      label={collapsed ? "Expand details" : "Collapse details"}
+      onClick={toggle}
+      className="left-0 hidden -translate-x-1/2 xl:inline-flex"
+    >
+      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+    </EdgeHandle>
   );
 }

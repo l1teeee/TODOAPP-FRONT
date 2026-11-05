@@ -25,7 +25,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={nunito.variable}>
+    <html
+      lang="en"
+      className={nunito.variable}
+      data-scroll-behavior="smooth"
+    >
       <head>
         <Script id="theme-boot-script" strategy="beforeInteractive">
           {THEME_BOOT_SCRIPT}

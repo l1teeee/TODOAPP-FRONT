@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { useSession } from "./use-session";
 
 export function RequireSession({
@@ -30,8 +29,7 @@ export function RedirectIfSession({ children }: { children: ReactNode }) {
     if (status === "authenticated") router.replace("/today");
   }, [status, router]);
 
-  if (status !== "anonymous") {
-    return <Skeleton className="m-auto h-64 w-full max-w-[420px] rounded-card" />;
-  }
+  // Always render the page so it prerenders into the static shell; an
+  // authenticated user is redirected by the effect above.
   return children;
 }

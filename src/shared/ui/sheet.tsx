@@ -142,7 +142,7 @@ export function Sheet({
                   </IconButton>
                 </RadixDialog.Close>
               </div>
-              <div ref={bodyRef} className="flex-1 overflow-y-auto">
+              <div ref={bodyRef} className="scroll-soft flex-1 overflow-y-auto overscroll-contain">
                 {children}
               </div>
             </RadixDialog.Content>

@@ -1,5 +1,8 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { useRef, type ReactNode } from "react";
 import { cn } from "@/shared/lib/cn";
+import { useShellEntrance } from "@/shared/motion/use-entrance";
 
 export interface AuthCardProps {
   title: string;
@@ -16,8 +19,13 @@ export function AuthCard({
   footer,
   className,
 }: AuthCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  useShellEntrance(cardRef, { y: 12, delay: 0.08 });
+
   return (
     <div
+      ref={cardRef}
+      data-motion="pending"
       className={cn(
         "w-full rounded-card border border-line bg-surface p-6 sm:p-7",
         className,

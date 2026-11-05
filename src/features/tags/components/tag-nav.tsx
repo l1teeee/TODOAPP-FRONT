@@ -48,12 +48,6 @@ export function TagNav({ activeTagId, onNavigate }: TagNavProps) {
                     className={cn("h-4 w-4 shrink-0", palette.icon)}
                   />
                   <span className="truncate">{tag.name}</span>
-                  {isActive ? (
-                    <span
-                      aria-hidden="true"
-                      className="absolute right-0 top-1.5 bottom-1.5 w-[3px] rounded-l-full bg-accent"
-                    />
-                  ) : null}
                 </Link>
               </li>
             );

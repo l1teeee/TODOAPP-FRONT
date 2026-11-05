@@ -1,7 +1,7 @@
 "use client";
 
 import { RotateCcw, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   useDeleteActivityForever,
   useRestoreActivity,
@@ -13,6 +13,7 @@ import { useLists } from "@/features/lists/api/use-lists";
 import { ListLabel } from "@/features/lists/components/list-label";
 import { useTags } from "@/features/tags/api/use-tags";
 import { TagChip } from "@/features/tags/components/tag-chip";
+import { useEntrance } from "@/shared/motion/use-entrance";
 import { Button } from "@/shared/ui/button";
 import { Dialog } from "@/shared/ui/dialog";
 import { EmptyState } from "@/shared/ui/empty-state";
@@ -33,6 +34,9 @@ export function TrashView() {
   const { data: tags } = useTags();
   const restoreMutation = useRestoreActivity();
   const deleteForeverMutation = useDeleteActivityForever();
+
+  const listRef = useRef<HTMLDivElement>(null);
+  useEntrance(listRef, !isLoading);
 
   const [confirmingActivity, setConfirmingActivity] = useState<Activity | null>(
     null,
@@ -66,8 +70,9 @@ export function TrashView() {
 
       {isLoading ? (
         <div className="space-y-3" aria-busy="true">
-          <Skeleton className="h-14 w-full rounded-card" />
-          <Skeleton className="h-14 w-full rounded-card" />
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Skeleton key={index} className="h-14 w-full rounded-card" />
+          ))}
         </div>
       ) : !activities || activities.length === 0 ? (
         <EmptyState
@@ -76,7 +81,7 @@ export function TrashView() {
           text="Moved items will appear here before being permanently deleted."
         />
       ) : (
-        <div className="space-y-2">
+        <div ref={listRef} className="space-y-2">
           {activities.map((activity) => (
             <ActivityRow
               key={activity.id}

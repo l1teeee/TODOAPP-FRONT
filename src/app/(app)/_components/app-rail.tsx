@@ -10,9 +10,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useRef } from "react";
 import { ReminderBell } from "@/features/activities/components/reminder-bell";
 import { useSignOut } from "@/features/auth/api/use-auth";
 import { cn } from "@/shared/lib/cn";
+import {
+  useActiveIndicator,
+  useShellEntrance,
+} from "@/shared/motion/use-entrance";
 
 const TOP_ITEMS = [
   { href: "/today", label: "Today", icon: Home },
@@ -30,6 +35,14 @@ export function AppRail({ onNavigate, className }: AppRailProps) {
   const pathname = usePathname();
   const router = useRouter();
   const signOutMutation = useSignOut();
+  const navRef = useRef<HTMLElement>(null);
+
+  useShellEntrance(navRef, { x: -16 });
+  useActiveIndicator(
+    navRef,
+    pathname,
+    "absolute inset-0 -z-10 rounded-full bg-accent-soft",
+  );
 
   const handleSignOut = () => {
     onNavigate?.();
@@ -42,6 +55,8 @@ export function AppRail({ onNavigate, className }: AppRailProps) {
 
   return (
     <nav
+      ref={navRef}
+      data-motion="pending"
       aria-label="App rail"
       className={cn(
         "flex h-full w-[72px] shrink-0 flex-col items-center justify-between border-r border-line bg-surface py-5",
@@ -61,9 +76,9 @@ export function AppRail({ onNavigate, className }: AppRailProps) {
               title={item.label}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "icon-anim inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                "icon-anim relative isolate inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                 active
-                  ? "bg-accent-soft text-accent"
+                  ? "text-accent"
                   : "text-fg-secondary hover:bg-surface-muted hover:text-fg",
               )}
             >
@@ -82,9 +97,9 @@ export function AppRail({ onNavigate, className }: AppRailProps) {
           title="Settings"
           aria-current={pathname === "/settings" ? "page" : undefined}
           className={cn(
-            "icon-anim inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+            "icon-anim relative isolate inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
             pathname === "/settings"
-              ? "bg-accent-soft text-accent"
+              ? "text-accent"
               : "text-fg-secondary hover:bg-surface-muted hover:text-fg",
           )}
         >
@@ -96,7 +111,7 @@ export function AppRail({ onNavigate, className }: AppRailProps) {
           disabled={signOutMutation.isPending}
           aria-label="Log out"
           title="Log out"
-          className="icon-anim inline-flex h-10 w-10 items-center justify-center rounded-full text-fg-secondary transition-colors hover:bg-surface-muted hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50 cursor-pointer"
+          className="icon-anim relative inline-flex h-10 w-10 items-center justify-center rounded-full text-fg-secondary transition-colors hover:bg-surface-muted hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50 cursor-pointer"
         >
           <LogOut className="h-5 w-5" aria-hidden="true" />
         </button>

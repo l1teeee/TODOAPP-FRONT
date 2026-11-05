@@ -1,4 +1,9 @@
+"use client";
+
 import { BookOpen, Sparkles, Telescope } from "lucide-react";
+
+import { useRef } from "react";
+import { useShellEntrance } from "@/shared/motion/use-entrance";
 
 const BRAND_CARDS = [
   {
@@ -19,8 +24,13 @@ const BRAND_CARDS = [
 ] as const;
 
 export function AuthBrandPanel() {
+  const panelRef = useRef<HTMLElement>(null);
+  useShellEntrance(panelRef, { y: 12 });
+
   return (
     <aside
+      ref={panelRef}
+      data-motion="pending"
       aria-label="TODO App overview"
       className="flex h-full flex-col justify-between border-r border-line bg-navy bg-[radial-gradient(circle_at_85%_10%,color-mix(in_srgb,var(--berry)_55%,transparent),transparent_55%),radial-gradient(circle_at_10%_95%,color-mix(in_srgb,var(--accent)_50%,transparent),transparent_55%)] p-10 xl:p-14"
     >

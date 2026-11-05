@@ -1,7 +1,8 @@
 "use client";
 
 import { Bell } from "lucide-react";
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
+import { useEntrance } from "@/shared/motion/use-entrance";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { Skeleton } from "@/shared/ui/skeleton";
 import type { Activity } from "../model/activity";
@@ -24,6 +25,9 @@ export function RemindersSection({
   renderMeta,
   renderActions,
 }: RemindersSectionProps) {
+  const listRef = useRef<HTMLDivElement>(null);
+  useEntrance(listRef, !isLoading && reminders.length > 0);
+
   return (
     <section aria-labelledby="reminders-heading" aria-busy={isLoading}>
       <h2
@@ -44,7 +48,10 @@ export function RemindersSection({
           title="No reminders for this day"
         />
       ) : (
-        <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2 xl:grid-cols-3">
+        <div
+          ref={listRef}
+          className="grid grid-cols-1 gap-3.5 md:grid-cols-2 xl:grid-cols-3"
+        >
           {reminders.map((reminder) => (
             <ReminderCard
               key={reminder.id}

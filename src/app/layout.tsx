@@ -22,6 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={nunito.variable}>
       <body className="bg-canvas text-fg font-sans antialiased">
+        <noscript>
+          <style>{'[data-motion="pending"]{opacity:1 !important}'}</style>
+        </noscript>
         <Providers>{children}</Providers>
       </body>
     </html>

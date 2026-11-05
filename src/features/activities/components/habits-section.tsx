@@ -1,6 +1,8 @@
 "use client";
 
 import { Sparkles } from "lucide-react";
+import { useRef } from "react";
+import { useEntrance } from "@/shared/motion/use-entrance";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { Skeleton } from "@/shared/ui/skeleton";
 import type { Activity } from "../model/activity";
@@ -19,6 +21,9 @@ export function HabitsSection({
   selectedId,
   onSelect,
 }: HabitsSectionProps) {
+  const listRef = useRef<HTMLDivElement>(null);
+  useEntrance(listRef, !isLoading && habits.length > 0);
+
   return (
     <section aria-labelledby="habits-heading" aria-busy={isLoading}>
       <h2
@@ -39,7 +44,7 @@ export function HabitsSection({
           title="No habits yet"
         />
       ) : (
-        <div className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory xl:grid xl:grid-cols-5 xl:overflow-visible xl:pb-0">
+        <div ref={listRef} className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory xl:grid xl:grid-cols-5 xl:overflow-visible xl:pb-0">
           {habits.map((habit, index) => (
             <div
               key={habit.id}

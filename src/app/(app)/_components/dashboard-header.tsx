@@ -11,6 +11,7 @@ import { useTags } from "@/features/tags/api/use-tags";
 import { ThemeToggle } from "@/shared/theme/theme-toggle";
 import { Button } from "@/shared/ui/button";
 import { SearchField } from "@/shared/ui/search-field";
+import { SidebarToggle } from "./sidebar-toggle";
 import { useDashboardParams } from "./use-dashboard-params";
 
 const VIEW_TITLES: Record<ActivityView, string> = {
@@ -94,13 +95,16 @@ export function DashboardHeader({ view, onNewActivity }: DashboardHeaderProps) {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-fg">
-            {heading}
-          </h1>
-          <p className="mt-1 text-xs text-fg-secondary">
-            Manage your habits, reminders, events and activities.
-          </p>
+        <div className="flex items-center gap-3">
+          <SidebarToggle showWhen="collapsed" />
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-fg">
+              {heading}
+            </h1>
+            <p className="mt-1 text-xs text-fg-secondary">
+              Manage your habits, reminders, events and activities.
+            </p>
+          </div>
         </div>
         <Button variant="berry" className="plus-spin" onClick={onNewActivity}>
           <Plus className="h-4 w-4" aria-hidden="true" />

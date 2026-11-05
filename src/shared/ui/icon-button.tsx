@@ -27,7 +27,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         aria-label={label}
         title={label}
         className={cn(
-          "icon-anim inline-flex items-center justify-center rounded-control transition-all select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent active:scale-95 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
+          "icon-anim inline-flex items-center justify-center rounded-control transition-[scale,background-color,color,border-color,opacity] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent active:scale-[0.95] disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
           variant === "ghost" &&
             "text-fg-secondary hover:bg-surface-muted hover:text-fg",
           variant === "secondary" &&

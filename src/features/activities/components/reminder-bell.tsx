@@ -1,13 +1,14 @@
 "use client";
 
 import { Bell } from "lucide-react";
+import { Skeleton } from "@/shared/ui/skeleton";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { IconButton } from "@/shared/ui/icon-button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
 import { useActivities } from "../api/use-activities";
 
 export function ReminderBell() {
-  const { data: activities } = useActivities({ view: "today" });
+  const { data: activities, isLoading } = useActivities({ view: "today" });
   const todayReminders =
     activities?.filter((item) => item.kind === "reminder") ?? [];
   const hasReminders = todayReminders.length > 0;
@@ -31,7 +32,13 @@ export function ReminderBell() {
         <p className="mb-2 text-xs font-semibold text-fg">
           Today&apos;s Reminders
         </p>
-        {todayReminders.length === 0 ? (
+        {isLoading ? (
+          <div className="space-y-1.5" aria-busy="true">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <Skeleton key={index} className="h-9 w-full rounded-md" />
+            ))}
+          </div>
+        ) : todayReminders.length === 0 ? (
           <EmptyState
             title="No reminders today"
             className="py-4 px-3"

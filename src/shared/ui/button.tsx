@@ -11,15 +11,15 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-accent text-accent-fg hover:bg-accent-strong active:scale-[0.99] border border-transparent",
+    "bg-accent text-accent-fg hover:bg-accent-strong border border-transparent",
   berry:
-    "bg-berry text-white hover:opacity-90 active:scale-[0.99] border border-transparent",
+    "bg-berry text-white hover:opacity-90 border border-transparent",
   secondary:
-    "bg-surface text-fg border border-line hover:bg-surface-muted hover:border-line-strong active:scale-[0.99]",
+    "bg-surface text-fg border border-line hover:bg-surface-muted hover:border-line-strong",
   ghost:
-    "bg-transparent text-fg-secondary hover:bg-surface-muted hover:text-fg active:scale-[0.99] border border-transparent",
+    "bg-transparent text-fg-secondary hover:bg-surface-muted hover:text-fg border border-transparent",
   danger:
-    "bg-tag-pink-bg text-tag-pink-fg border border-transparent hover:opacity-90 active:scale-[0.99]",
+    "bg-tag-pink-bg text-tag-pink-fg border border-transparent hover:opacity-90",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -37,7 +37,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         type={type}
         className={cn(
-          "inline-flex items-center justify-center transition-all select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
+          "btn relative inline-flex items-center justify-center transition-[translate,scale,opacity,background-color,border-color,color] duration-150 ease-out select-none motion-safe:hover:-translate-y-px motion-safe:active:scale-[0.97] after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:opacity-0 after:shadow-md after:transition-opacity after:duration-150 hover:after:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
           variantClasses[variant],
           sizeClasses[size],
           className,

@@ -2,50 +2,50 @@
 
 :root {
   color-scheme: light dark;
-  --canvas: light-dark(#EEF2F6, #0E1230);
-  --surface: light-dark(#FFFFFF, #161B3F);
-  --surface-muted: light-dark(#F8FAFC, #1B2150);
-  --line: light-dark(#E4E9F2, #2A3170);
-  --line-strong: light-dark(#D5DCE8, #39418A);
-  --fg: light-dark(#1A1D26, #EEF2F6);
-  --fg-secondary: light-dark(#5F6B85, #B4BED3);
-  --fg-muted: light-dark(#8F9BB3, #8F9BB3);
-  --accent: light-dark(#3B82F6, #5B9BFF);
-  --accent-strong: light-dark(#2563EB, #7DB0FF);
-  --accent-soft: light-dark(#EDF2FE, #1E2A5A);
-  --accent-fg: light-dark(#FFFFFF, #0E1230);
-  --berry: light-dark(#DE3B75, #F0679A);
-  --berry-soft: light-dark(#FDECEF, #3A1F35);
-  --navy: #1E255E;
+  --canvas: light-dark(#EEF2F6, #171B34);
+  --surface: light-dark(#FFFFFF, #1F2444);
+  --surface-muted: light-dark(#F8FAFC, #262C52);
+  --line: light-dark(#E4E9F2, #323A68);
+  --line-strong: light-dark(#D5DCE8, #3F4880);
+  --fg: light-dark(#1A1D26, #ECEFF7);
+  --fg-secondary: light-dark(#5F6B85, #BAC2DC);
+  --fg-muted: light-dark(#8F9BB3, #8F9BB8);
+  --accent: light-dark(#3B82F6, #6EA8FF);
+  --accent-strong: light-dark(#2563EB, #8DBBFF);
+  --accent-soft: light-dark(#EDF2FE, #263465);
+  --accent-fg: light-dark(#FFFFFF, #10142B);
+  --berry: light-dark(#DE3B75, #F27BA6);
+  --berry-soft: light-dark(#FDECEF, #43263F);
+  --navy: light-dark(#1E255E, #2C3577);
   --navy-fg: #FFFFFF;
-  --navy-muted: #AEB8E6;
-  --success: light-dark(#10B981, #34D399);
-  --status-todo: light-dark(#3B82F6, #5B9BFF);
-  --status-progress: light-dark(#DE3B75, #F0679A);
-  --status-done: light-dark(#1E255E, #8E9BFF);
-  --habit-art: light-dark(#EDF2FE, #1E2A5A);
-  --habit-lavender-bg: light-dark(#EDF2FE, #1E2A5A);
-  --habit-lavender-icon: light-dark(#3B82F6, #8FB8FF);
-  --habit-rose-bg: light-dark(#FDECEF, #3A1F35);
-  --habit-rose-icon: light-dark(#DE3B75, #F38DB3);
-  --habit-navy-bg: #1E255E;
+  --navy-muted: light-dark(#AEB8E6, #C3CBF2);
+  --success: light-dark(#10B981, #4ADE9B);
+  --status-todo: light-dark(#3B82F6, #6EA8FF);
+  --status-progress: light-dark(#DE3B75, #F27BA6);
+  --status-done: light-dark(#1E255E, #9AA6FF);
+  --habit-art: light-dark(#EDF2FE, #263465);
+  --habit-lavender-bg: light-dark(#EDF2FE, #263465);
+  --habit-lavender-icon: light-dark(#3B82F6, #9CC3FF);
+  --habit-rose-bg: light-dark(#FDECEF, #43263F);
+  --habit-rose-icon: light-dark(#DE3B75, #F7A1C2);
+  --habit-navy-bg: light-dark(#1E255E, #2C3577);
   --habit-navy-icon: #FFFFFF;
-  --habit-peach-bg: light-dark(#FFF1E6, #3A2618);
-  --habit-peach-icon: light-dark(#F97316, #FDBA74);
-  --habit-mint-bg: light-dark(#E7F8F0, #15352A);
-  --habit-mint-icon: light-dark(#10B981, #6EE7B7);
-  --tag-blue-bg: light-dark(#EDF2FE, #1E2A5A);
-  --tag-blue-fg: light-dark(#3B82F6, #8FB8FF);
-  --tag-pink-bg: light-dark(#FDECEF, #3A1F35);
-  --tag-pink-fg: light-dark(#DE3B75, #F38DB3);
-  --tag-purple-bg: light-dark(#F1ECFE, #2B2352);
-  --tag-purple-fg: light-dark(#7C5CFA, #B7A5FF);
-  --tag-orange-bg: light-dark(#FFF1E6, #3A2618);
-  --tag-orange-fg: light-dark(#F97316, #FDBA74);
-  --tag-green-bg: light-dark(#E7F8F0, #15352A);
-  --tag-green-fg: light-dark(#10B981, #6EE7B7);
-  --tag-gray-bg: light-dark(#EEF2F6, #262C55);
-  --tag-gray-fg: light-dark(#5F6B85, #B4BED3);
+  --habit-peach-bg: light-dark(#FFF1E6, #45311F);
+  --habit-peach-icon: light-dark(#F97316, #FDC08A);
+  --habit-mint-bg: light-dark(#E7F8F0, #1D4034);
+  --habit-mint-icon: light-dark(#10B981, #86E8C0);
+  --tag-blue-bg: light-dark(#EDF2FE, #263465);
+  --tag-blue-fg: light-dark(#3B82F6, #9CC3FF);
+  --tag-pink-bg: light-dark(#FDECEF, #43263F);
+  --tag-pink-fg: light-dark(#DE3B75, #F7A1C2);
+  --tag-purple-bg: light-dark(#F1ECFE, #332B5E);
+  --tag-purple-fg: light-dark(#7C5CFA, #C3B4FF);
+  --tag-orange-bg: light-dark(#FFF1E6, #45311F);
+  --tag-orange-fg: light-dark(#F97316, #FDC08A);
+  --tag-green-bg: light-dark(#E7F8F0, #1D4034);
+  --tag-green-fg: light-dark(#10B981, #86E8C0);
+  --tag-gray-bg: light-dark(#EEF2F6, #2C3358);
+  --tag-gray-fg: light-dark(#5F6B85, #C0C8E0);
 }
 
 :root[data-theme="light"] {
@@ -54,6 +54,15 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+  --shadow-xl: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+    --shadow-xl: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+  }
 }
 
 @theme inline {
@@ -126,6 +135,39 @@ body {
   }
 }
 
+@keyframes shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--fg) 8%, transparent),
+    transparent
+  );
+}
+
 @keyframes pop {
   0% {
     scale: 1;
@@ -185,6 +227,26 @@ body {
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  [data-motion="pending"] {
+    opacity: 0;
+  }
+
+  .skeleton::after {
+    animation: shimmer 1.4s linear infinite;
+  }
+
+  .btn > svg {
+    transition: translate 160ms ease-out;
+  }
+  .btn:not(.plus-spin):hover > svg:first-child {
+    translate: 2px 0;
+  }
+  .btn svg.animate-spin {
+    animation:
+      spin 1s linear infinite,
+      fade-in 180ms ease-out;
+  }
+
   .icon-anim svg {
     transition: transform 200ms ease-out;
   }

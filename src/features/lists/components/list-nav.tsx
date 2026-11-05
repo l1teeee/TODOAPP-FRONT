@@ -42,14 +42,6 @@ export function ListNav({ activeListId, onNavigate }: ListNavProps) {
                 >
                   <ListIcon icon={list.icon} className="h-4 w-4" />
                   <span className="truncate">{list.name}</span>
-                  {isActive ? (
-                    <span
-                      aria-hidden="true"
-                      className="
-                        absolute right-0 top-1.5 bottom-1.5 w-[3px] rounded-l-full bg-accent
-                      "
-                    />
-                  ) : null}
                 </Link>
               </li>
             );

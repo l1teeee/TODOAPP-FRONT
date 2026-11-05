@@ -8,10 +8,12 @@ import {
 } from "@/features/activities/api/use-activities";
 import { ActivityRow } from "@/features/activities/components/activity-row";
 import type { Activity } from "@/features/activities/model/activity";
+import { useRef } from "react";
 import { useLists } from "@/features/lists/api/use-lists";
 import { ListLabel } from "@/features/lists/components/list-label";
 import { useTags } from "@/features/tags/api/use-tags";
 import { TagChip } from "@/features/tags/components/tag-chip";
+import { useEntrance } from "@/shared/motion/use-entrance";
 import { addDaysFormatted, formatLocalDate } from "@/shared/lib/dates";
 import { Button } from "@/shared/ui/button";
 import { EmptyState } from "@/shared/ui/empty-state";
@@ -48,6 +50,8 @@ export function CompletedView() {
   const { data: tags } = useTags();
   const updateMutation = useUpdateActivity();
   const trashMutation = useTrashActivity();
+  const groupsRef = useRef<HTMLDivElement>(null);
+  useEntrance(groupsRef, !isLoading);
 
   const renderMeta = (activity: Activity) => {
     const matchedTags =
@@ -91,9 +95,9 @@ export function CompletedView() {
 
       {isLoading ? (
         <div className="space-y-3" aria-busy="true">
-          <Skeleton className="h-14 w-full rounded-card" />
-          <Skeleton className="h-14 w-full rounded-card" />
-          <Skeleton className="h-14 w-full rounded-card" />
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Skeleton key={index} className="h-14 w-full rounded-card" />
+          ))}
         </div>
       ) : groups.length === 0 ? (
         <EmptyState
@@ -102,7 +106,7 @@ export function CompletedView() {
           text="Activities you mark as done will show up here."
         />
       ) : (
-        <div className="space-y-6">
+        <div ref={groupsRef} className="space-y-6">
           {groups.map((group) => (
             <section key={group.label} className="space-y-2.5">
               <h2 className="text-xs font-semibold uppercase tracking-wider text-fg-muted">

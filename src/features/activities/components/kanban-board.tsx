@@ -1,7 +1,8 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { cn } from "@/shared/lib/cn";
+import { useEntrance } from "@/shared/motion/use-entrance";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { Skeleton } from "@/shared/ui/skeleton";
 import type { Activity, ActivityStatus } from "../model/activity";
@@ -48,6 +49,9 @@ export function KanbanBoard({
   renderMeta,
   renderActions,
 }: KanbanBoardProps) {
+  const boardRef = useRef<HTMLDivElement>(null);
+  useEntrance(boardRef, !isLoading);
+
   return (
     <section aria-labelledby="kanban-heading" aria-busy={isLoading}>
       <h2
@@ -56,7 +60,10 @@ export function KanbanBoard({
       >
         To Do List
       </h2>
-      <div className="flex gap-3.5 overflow-x-auto pb-2 snap-x snap-mandatory lg:grid lg:grid-cols-3 lg:overflow-visible lg:pb-0">
+      <div
+        ref={boardRef}
+        className="flex gap-3.5 overflow-x-auto pb-2 snap-x snap-mandatory lg:grid lg:grid-cols-3 lg:overflow-visible lg:pb-0"
+      >
         {COLUMNS.map((column) => {
           const columnTasks = tasks.filter(
             (task) => task.status === column.status,

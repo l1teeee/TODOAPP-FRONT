@@ -1,9 +1,7 @@
 "use client";
 
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
 import { Plus } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useActivities } from "@/features/activities/api/use-activities";
 import { ActivityActionsMenu } from "@/features/activities/components/activity-actions-menu";
 import { ActivityFormDialog } from "@/features/activities/components/activity-form-dialog";
@@ -27,14 +25,11 @@ import { IconButton } from "@/shared/ui/icon-button";
 import { DashboardHeader } from "./dashboard-header";
 import { useDashboardParams } from "./use-dashboard-params";
 
-gsap.registerPlugin(useGSAP);
-
 export interface DashboardViewProps {
   view: ActivityView;
 }
 
 export function DashboardView({ view }: DashboardViewProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const { q, list, tag, activity: selectedParam, setParam } =
     useDashboardParams();
 
@@ -52,24 +47,6 @@ export function DashboardView({ view }: DashboardViewProps) {
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
   const [defaultKind, setDefaultKind] = useState<ActivityKind>("task");
   const [defaultStatus, setDefaultStatus] = useState<ActivityStatus>("todo");
-
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia();
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap.from("[data-dashboard-section]", {
-          opacity: 0,
-          y: 8,
-          duration: 0.35,
-          stagger: 0.06,
-          ease: "power2.out",
-          clearProps: "all",
-        });
-      });
-      return () => mm.revert();
-    },
-    { scope: containerRef, dependencies: [view] },
-  );
 
   const habits =
     activities?.filter((item) => item.kind === "habit") ?? [];
@@ -123,8 +100,8 @@ export function DashboardView({ view }: DashboardViewProps) {
   );
 
   return (
-    <div ref={containerRef} className="mx-auto max-w-6xl space-y-7 p-4 sm:p-6">
-      <div data-dashboard-section>
+    <div className="mx-auto max-w-6xl space-y-7 p-4 sm:p-6">
+      <div>
         <DashboardHeader
           view={view}
           onNewActivity={() => handleOpenNew("task", "todo")}
@@ -132,7 +109,7 @@ export function DashboardView({ view }: DashboardViewProps) {
       </div>
 
       {view !== "inbox" ? (
-        <div data-dashboard-section>
+        <div>
           <HabitsSection
             habits={habits}
             isLoading={isLoading}
@@ -142,7 +119,7 @@ export function DashboardView({ view }: DashboardViewProps) {
         </div>
       ) : null}
 
-      <div data-dashboard-section>
+      <div>
         <RemindersSection
           reminders={reminders}
           isLoading={isLoading}
@@ -153,7 +130,7 @@ export function DashboardView({ view }: DashboardViewProps) {
         />
       </div>
 
-      <div data-dashboard-section>
+      <div>
         <KanbanBoard
           tasks={tasks}
           isLoading={isLoading}

@@ -2,6 +2,7 @@
 
 import { FileText } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { useRef } from "react";
 import {
   useActivities,
   useActivity,
@@ -16,6 +17,9 @@ import { UserMenu } from "@/features/profile/components/user-menu";
 import { SubtaskChecklist } from "@/features/subtasks/components/subtask-checklist";
 import { useTags } from "@/features/tags/api/use-tags";
 import { TagChip } from "@/features/tags/components/tag-chip";
+import { gsap, markWillChange, NO_REDUCED_MOTION, useGSAP } from "@/shared/motion/gsap";
+import { DURATION, EASE } from "@/shared/motion/motion-tokens";
+import { useShellEntrance } from "@/shared/motion/use-entrance";
 import { ThemeToggle } from "@/shared/theme/theme-toggle";
 import { Button } from "@/shared/ui/button";
 import { EmptyState } from "@/shared/ui/empty-state";
@@ -31,7 +35,53 @@ function resolveViewFromPathname(pathname: string): ActivityView {
   return "today";
 }
 
+function DetailSkeleton() {
+  return (
+    <div className="space-y-6" aria-busy="true">
+      <div className="space-y-3 rounded-card bg-surface-muted p-4">
+        <Skeleton className="h-5 w-2/3" />
+        <Skeleton className="h-3 w-full" />
+        <Skeleton className="h-3 w-5/6" />
+      </div>
+      <div className="space-y-2">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <Skeleton key={index} className="h-11 w-full" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function DetailBody({ activity }: { activity: Activity | null }) {
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const activityId = activity?.id ?? null;
+
+  useGSAP(
+    () => {
+      const body = bodyRef.current;
+      if (!body) return;
+
+      const mm = gsap.matchMedia();
+      mm.add(NO_REDUCED_MOTION, () => {
+        gsap.fromTo(
+          body,
+          { autoAlpha: 0, y: 6 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: DURATION.base,
+            ease: EASE.out,
+            overwrite: "auto",
+            onStart: markWillChange,
+            clearProps: "all",
+          },
+        );
+      });
+      return () => mm.revert();
+    },
+    { scope: bodyRef, dependencies: [activityId] },
+  );
+
   const { data: lists } = useLists();
   const { data: tags } = useTags();
   const updateMutation = useUpdateActivity();
@@ -55,7 +105,7 @@ function DetailBody({ activity }: { activity: Activity | null }) {
   const isCompleted = activity.status === "completed";
 
   return (
-    <div className="flex flex-1 flex-col justify-between gap-6">
+    <div ref={bodyRef} className="flex flex-1 flex-col justify-between gap-6">
       <div className="space-y-6">
         <ActivityDetailCard
           activity={activity}
@@ -94,6 +144,8 @@ export function DetailPanel() {
   const router = useRouter();
   const signOutMutation = useSignOut();
   const view = resolveViewFromPathname(pathname);
+  const asideRef = useRef<HTMLElement>(null);
+  useShellEntrance(asideRef, { x: 16, delay: 0.1 });
   const { q, list, tag, activity: activityParam, setParam } =
     useDashboardParams();
 
@@ -129,6 +181,8 @@ export function DetailPanel() {
   return (
     <>
       <aside
+        ref={asideRef}
+        data-motion="pending"
         aria-label="Activity details"
         aria-busy={isLoading}
         className="hidden xl:flex xl:h-full xl:w-[320px] xl:shrink-0 xl:flex-col xl:border-l xl:border-line xl:bg-surface xl:p-5 xl:overflow-y-auto"
@@ -139,11 +193,7 @@ export function DetailPanel() {
         </div>
 
         {isLoading ? (
-          <div className="space-y-4">
-            <Skeleton className="h-44 w-full rounded-card" />
-            <Skeleton className="h-10 w-full rounded-control" />
-            <Skeleton className="h-10 w-full rounded-control" />
-          </div>
+          <DetailSkeleton />
         ) : (
           <DetailBody activity={resolvedActivity} />
         )}
@@ -164,10 +214,7 @@ export function DetailPanel() {
         >
           <div className="flex h-full flex-col pt-2">
             {isDetailLoading ? (
-              <div className="space-y-4">
-                <Skeleton className="h-44 w-full rounded-card" />
-                <Skeleton className="h-10 w-full rounded-control" />
-              </div>
+              <DetailSkeleton />
             ) : (
               <DetailBody activity={resolvedActivity} />
             )}

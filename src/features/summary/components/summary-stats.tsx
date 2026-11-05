@@ -1,4 +1,8 @@
+"use client";
+
 import { AlertTriangle, CheckCircle2, Clock, Layers } from "lucide-react";
+import { useRef } from "react";
+import { useEntrance } from "@/shared/motion/use-entrance";
 import type { Summary } from "../model/summary";
 
 export interface SummaryStatsProps {
@@ -10,6 +14,9 @@ export function SummaryStats({ summary }: SummaryStatsProps) {
     summary.byStatus.todo +
     summary.byStatus.inProgress +
     summary.byStatus.completed;
+
+  const gridRef = useRef<HTMLDivElement>(null);
+  useEntrance(gridRef, true);
 
   const tiles = [
     {
@@ -39,7 +46,10 @@ export function SummaryStats({ summary }: SummaryStatsProps) {
   ] as const;
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div
+      ref={gridRef}
+      className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4"
+    >
       {tiles.map((tile) => {
         const Icon = tile.icon;
         return (

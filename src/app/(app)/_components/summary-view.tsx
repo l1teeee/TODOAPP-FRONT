@@ -26,7 +26,15 @@ export function SummaryView() {
             <Skeleton className="h-24 w-full rounded-card" />
             <Skeleton className="h-24 w-full rounded-card" />
           </div>
-          <Skeleton className="h-48 w-full rounded-card" />
+          <div className="space-y-4 rounded-card border border-line bg-surface p-5">
+            <Skeleton className="h-4 w-24" />
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="space-y-1.5">
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-2.5 w-full rounded-full" />
+              </div>
+            ))}
+          </div>
           <Skeleton className="h-32 w-full rounded-card" />
         </div>
       ) : (

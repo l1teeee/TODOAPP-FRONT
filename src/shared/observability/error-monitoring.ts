@@ -13,6 +13,10 @@ function stripQueryAndHash(url: string): string {
   }
 }
 
+function stripQueryFromName(text: string): string {
+  return text.split(/[?#]/, 1)[0];
+}
+
 function redactEmails(text: string): string {
   let decoded = text;
   for (let i = 0; i < 2; i++) {
@@ -82,16 +86,10 @@ function sanitizeEvent(event: Sentry.Event): void {
       if (typeof value === "string") event.tags[key] = scrubValue(value) as string;
     }
   }
-  if (event.transaction) event.transaction = scrubValue(event.transaction) as string;
+  if (event.transaction) event.transaction = scrubValue(stripQueryFromName(event.transaction)) as string;
   for (const span of event.spans ?? []) {
     scrubAttributes(span.data);
-    if (span.description?.includes("?")) {
-      const match = span.description.match(/^(\S+\s+)(\S+)$/);
-      span.description = match
-        ? `${match[1]}${stripQueryAndHash(match[2])}`
-        : stripQueryAndHash(span.description);
-    }
-    if (span.description) span.description = scrubValue(span.description) as string;
+    if (span.description) span.description = scrubValue(stripQueryFromName(span.description)) as string;
   }
   if (event.breadcrumbs) {
     event.breadcrumbs = event.breadcrumbs

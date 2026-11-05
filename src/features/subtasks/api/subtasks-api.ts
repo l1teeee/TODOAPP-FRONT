@@ -2,43 +2,7 @@
 import { simulateLatency } from "@/shared/lib/simulate-latency";
 import type { Subtask } from "../model/subtask";
 
-let subtasksStore: Subtask[] = [
-  {
-    id: "sub-1",
-    activityId: "act-rem-1",
-    title: "10x rep biceps",
-    isDone: true,
-    position: 1,
-  },
-  {
-    id: "sub-2",
-    activityId: "act-rem-1",
-    title: "5x rep legs",
-    isDone: false,
-    position: 2,
-  },
-  {
-    id: "sub-3",
-    activityId: "act-rem-1",
-    title: "5x rep back",
-    isDone: false,
-    position: 3,
-  },
-  {
-    id: "sub-4",
-    activityId: "act-rem-1",
-    title: "Stretch 10 minutes",
-    isDone: false,
-    position: 4,
-  },
-  {
-    id: "sub-5",
-    activityId: "act-rem-1",
-    title: "Cool down walk",
-    isDone: false,
-    position: 5,
-  },
-];
+let subtasksStore: Subtask[] = [];
 
 let nextSubtaskCounter = 100;
 

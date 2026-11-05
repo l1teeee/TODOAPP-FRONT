@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useActivities } from "@/features/activities/api/use-activities";
 import { ActivityActionsMenu } from "@/features/activities/components/activity-actions-menu";
 import { ActivityFormDialog } from "@/features/activities/components/activity-form-dialog";
@@ -14,16 +14,36 @@ import type {
   ActivityStatus,
   ActivityView,
 } from "@/features/activities/model/activity";
+import { AssistantCard } from "@/features/assistant/components/assistant-card";
+import type { DailyBriefInput } from "@/features/assistant/model/daily-brief";
 import { useLists } from "@/features/lists/api/use-lists";
 import { ListLabel } from "@/features/lists/components/list-label";
 import { ListSelect } from "@/features/lists/components/list-select";
+import { useProfile } from "@/features/profile/api/use-profile";
 import { useTags } from "@/features/tags/api/use-tags";
 import { TagChip } from "@/features/tags/components/tag-chip";
 import { TagPicker } from "@/features/tags/components/tag-picker";
 import { Field } from "@/shared/ui/field";
 import { IconButton } from "@/shared/ui/icon-button";
 import { DashboardHeader } from "./dashboard-header";
+import { OnboardingCard } from "./onboarding-card";
+import { useOnboardingDismissed } from "./sample-data";
 import { useDashboardParams } from "./use-dashboard-params";
+
+function formatClock(date: Date): string {
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
+
+function useLocalTime(): string {
+  const [time, setTime] = useState(() => formatClock(new Date()));
+  useEffect(() => {
+    const timer = setInterval(() => setTime(formatClock(new Date())), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+  return time;
+}
 
 export interface DashboardViewProps {
   view: ActivityView;
@@ -40,8 +60,28 @@ export function DashboardView({ view }: DashboardViewProps) {
     q: q || undefined,
   });
 
-  const { data: lists } = useLists();
-  const { data: tags } = useTags();
+  const { data: lists, isLoading: isListsLoading } = useLists();
+  const { data: tags, isLoading: isTagsLoading } = useTags();
+  const { data: profile } = useProfile();
+  const { data: allActivities, isLoading: isAllLoading } = useActivities({
+    view: "all",
+  });
+  const onboardingDismissed = useOnboardingDismissed();
+  const localTime = useLocalTime();
+  const [locale] = useState(() =>
+    typeof navigator === "undefined" ? "en" : navigator.language,
+  );
+
+  const isWorkspaceEmpty =
+    !isAllLoading &&
+    !isListsLoading &&
+    !isTagsLoading &&
+    (allActivities?.length ?? 0) === 0 &&
+    (lists?.length ?? 0) === 0 &&
+    (tags?.length ?? 0) === 0;
+  const showOnboarding =
+    view === "today" && isWorkspaceEmpty && !onboardingDismissed;
+  const firstName = profile?.displayName?.trim().split(/\s+/)[0] || null;
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
@@ -56,6 +96,21 @@ export function DashboardView({ view }: DashboardViewProps) {
     activities?.filter((item) => item.kind === "task") ?? [];
 
   const selectedId = selectedParam ?? reminders[0]?.id ?? null;
+
+  const briefInput: DailyBriefInput = {
+    firstName,
+    localTime,
+    locale,
+    items: (activities ?? []).map((item) => ({
+      id: item.id,
+      kind: item.kind,
+      title: item.title,
+      startTime: item.startTime,
+      endTime: item.endTime,
+      location: item.location,
+      status: item.status,
+    })),
+  };
 
   const handleSelect = (id: string) => {
     setParam("activity", id);
@@ -101,12 +156,29 @@ export function DashboardView({ view }: DashboardViewProps) {
 
   return (
     <div className="mx-auto max-w-6xl space-y-7 p-4 sm:p-6">
+      {showOnboarding ? (
+        <OnboardingCard
+          firstName={firstName}
+          onStartFromScratch={() => handleOpenNew("task", "todo")}
+        />
+      ) : null}
+
       <div>
         <DashboardHeader
           view={view}
           onNewActivity={() => handleOpenNew("task", "todo")}
         />
       </div>
+
+      {view === "today" ? (
+        <div>
+          <AssistantCard
+            input={briefInput}
+            isLoading={isLoading}
+            onSelect={handleSelect}
+          />
+        </div>
+      ) : null}
 
       {view !== "inbox" ? (
         <div>

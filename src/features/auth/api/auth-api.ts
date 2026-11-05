@@ -30,6 +30,33 @@ export interface ResetPasswordVariables {
   newPassword: string;
 }
 
+export interface RequestLoginCodeVariables {
+  email: string;
+}
+
+export interface VerifyLoginCodeVariables {
+  email: string;
+  code: string;
+}
+
+export async function requestLoginCode({
+  email,
+}: RequestLoginCodeVariables): Promise<void> {
+  void email;
+  await simulateLatency();
+}
+
+export async function verifyLoginCode({
+  email,
+  code,
+}: VerifyLoginCodeVariables): Promise<void> {
+  void email;
+  await simulateLatency();
+  if (code === "000000") {
+    throw new AuthError("invalid_code");
+  }
+}
+
 export async function signIn({
   email,
   password,

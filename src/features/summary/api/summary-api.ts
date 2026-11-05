@@ -4,16 +4,16 @@ import type { Summary } from "../model/summary";
 
 const DEMO_SUMMARY: Summary = {
   byStatus: {
-    todo: 12,
-    inProgress: 2,
-    completed: 2,
+    todo: 0,
+    inProgress: 0,
+    completed: 0,
   },
   byKind: {
-    habit: 5,
-    reminder: 5,
-    task: 6,
+    habit: 0,
+    reminder: 0,
+    task: 0,
   },
-  completedLast7Days: 2,
+  completedLast7Days: 0,
   overdueReminders: 0,
 };
 

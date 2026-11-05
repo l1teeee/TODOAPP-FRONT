@@ -161,6 +161,13 @@ export function LoginForm() {
           ) : null}
           <span>Log in</span>
         </Button>
+
+        <Link
+          href="/login/code"
+          className="inline-flex h-10 w-full items-center justify-center rounded-control px-4 text-sm font-medium text-fg-secondary transition-colors hover:bg-surface-muted hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        >
+          Email me a login code
+        </Link>
       </form>
     </AuthCard>
   );

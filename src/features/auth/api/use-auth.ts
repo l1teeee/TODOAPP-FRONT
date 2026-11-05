@@ -3,15 +3,19 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   register,
+  requestLoginCode,
   requestPasswordReset,
   resetPassword,
   signIn,
   signOut,
+  verifyLoginCode,
   verifySignupCode,
   type RegisterVariables,
+  type RequestLoginCodeVariables,
   type RequestPasswordResetVariables,
   type ResetPasswordVariables,
   type SignInVariables,
+  type VerifyLoginCodeVariables,
   type VerifySignupCodeVariables,
 } from "./auth-api";
 
@@ -54,5 +58,19 @@ export function useSignOut() {
     onSuccess: () => {
       queryClient.clear();
     },
+  });
+}
+
+export function useRequestLoginCode() {
+  return useMutation({
+    mutationFn: (variables: RequestLoginCodeVariables) =>
+      requestLoginCode(variables),
+  });
+}
+
+export function useVerifyLoginCode() {
+  return useMutation({
+    mutationFn: (variables: VerifyLoginCodeVariables) =>
+      verifyLoginCode(variables),
   });
 }

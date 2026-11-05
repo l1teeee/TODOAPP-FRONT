@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut } from "lucide-react";
+import { Loader2, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSignOut } from "@/features/auth/api/use-auth";
 import { useProfile } from "@/features/profile/api/use-profile";
@@ -9,6 +9,7 @@ import { useTheme, type ThemePreference } from "@/shared/theme/use-theme";
 import { Button } from "@/shared/ui/button";
 import { SegmentedControl } from "@/shared/ui/segmented-control";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { useLoadSampleData } from "./sample-data";
 
 const THEME_OPTIONS: readonly { value: ThemePreference; label: string }[] = [
   { value: "light", label: "Light" },
@@ -21,6 +22,7 @@ export function SettingsView() {
   const { data: profile, isLoading } = useProfile();
   const { preference, setPreference } = useTheme();
   const signOutMutation = useSignOut();
+  const sampleData = useLoadSampleData();
 
   const handleSignOut = () => {
     signOutMutation.mutate(undefined, {
@@ -81,14 +83,26 @@ export function SettingsView() {
               {profile?.email ?? "evelyn@example.com"}
             </p>
           </div>
-          <Button
-            variant="secondary"
-            disabled={signOutMutation.isPending}
-            onClick={handleSignOut}
-          >
-            <LogOut className="h-4 w-4" aria-hidden="true" />
-            <span>Log out</span>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="secondary"
+              disabled={sampleData.isLoading}
+              onClick={() => void sampleData.load()}
+            >
+              {sampleData.isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : null}
+              <span>Load sample data</span>
+            </Button>
+            <Button
+              variant="secondary"
+              disabled={signOutMutation.isPending}
+              onClick={handleSignOut}
+            >
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+              <span>Log out</span>
+            </Button>
+          </div>
         </div>
       </section>
     </div>

@@ -15,7 +15,8 @@
     "test:agent": "jest --runInBand",
     "test:e2e": "playwright test",
     "check": "npm run lint && npm run typecheck && npm run build",
-    "api:types": "openapi-typescript src/shared/api/openapi.json -o src/shared/api/schema.d.ts"
+    "api:types": "openapi-typescript src/shared/api/openapi.json -o src/shared/api/schema.d.ts",
+    "prepare": "node scripts/install-git-hooks.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

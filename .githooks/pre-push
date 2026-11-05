@@ -1,0 +1,26 @@
+#!/bin/sh
+set -e
+
+echo "pre-push: running npm run check"
+npm run check
+
+echo "pre-push: running npm run test:agent"
+npm run test:agent
+
+echo "pre-push: running npm audit --omit=dev --audit-level=high"
+npm audit --omit=dev --audit-level=high
+
+if [ "$SKIP_SNYK" = "1" ]; then
+  echo "pre-push: SKIP_SNYK=1, Snyk scans skipped by explicit opt-out"
+else
+  if ! command -v snyk >/dev/null 2>&1; then
+    echo "pre-push: error: snyk is not found on PATH" >&2
+    exit 1
+  fi
+  echo "pre-push: running snyk test --severity-threshold=high"
+  snyk test --severity-threshold=high
+  echo "pre-push: running snyk code test --severity-threshold=high"
+  snyk code test --severity-threshold=high
+fi
+
+echo "pre-push: all gates passed"

@@ -90,7 +90,7 @@ export function DashboardHeader({ view, onNewActivity }: DashboardHeaderProps) {
             Manage your habits, reminders, events and activities.
           </p>
         </div>
-        <Button variant="secondary" onClick={onNewActivity}>
+        <Button variant="berry" className="plus-spin" onClick={onNewActivity}>
           <Plus className="h-4 w-4" aria-hidden="true" />
           <span>New Activity</span>
         </Button>

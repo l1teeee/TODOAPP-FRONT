@@ -40,13 +40,14 @@ export function HabitsSection({
         />
       ) : (
         <div className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory xl:grid xl:grid-cols-5 xl:overflow-visible xl:pb-0">
-          {habits.map((habit) => (
+          {habits.map((habit, index) => (
             <div
               key={habit.id}
               className="w-44 shrink-0 snap-start xl:w-auto xl:shrink"
             >
               <HabitCard
                 activity={habit}
+                index={index}
                 selected={selectedId === habit.id}
                 onSelect={onSelect}
               />

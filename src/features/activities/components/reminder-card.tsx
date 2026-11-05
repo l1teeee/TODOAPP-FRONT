@@ -81,7 +81,7 @@ export function ReminderCard({
             />
             <span className="truncate">{activity.location ?? "No location"}</span>
           </span>
-          <span className="shrink-0 font-semibold text-fg">
+          <span className="shrink-0 font-semibold text-berry">
             {activity.startTime ?? "--:--"}
           </span>
         </div>

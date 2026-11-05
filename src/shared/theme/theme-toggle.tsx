@@ -19,13 +19,13 @@ export function ThemeToggle() {
         aria-pressed={resolved === "light"}
         onClick={() => setPreference("light")}
         className={cn(
-          "inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent active:scale-95",
+          "theme-seg inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent active:scale-95",
           resolved === "light"
             ? "bg-surface text-fg shadow-xs"
             : "text-fg-muted hover:text-fg",
         )}
       >
-        <Sun className="h-4 w-4" aria-hidden="true" />
+        <Sun className="sun-icon h-4 w-4" aria-hidden="true" />
       </button>
       <button
         type="button"
@@ -33,13 +33,13 @@ export function ThemeToggle() {
         aria-pressed={resolved === "dark"}
         onClick={() => setPreference("dark")}
         className={cn(
-          "inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent active:scale-95",
+          "theme-seg inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent active:scale-95",
           resolved === "dark"
             ? "bg-surface text-fg shadow-xs"
             : "text-fg-muted hover:text-fg",
         )}
       >
-        <Moon className="h-4 w-4" aria-hidden="true" />
+        <Moon className="moon-icon h-4 w-4" aria-hidden="true" />
       </button>
     </div>
   );

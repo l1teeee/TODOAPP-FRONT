@@ -20,7 +20,7 @@ export function Avatar({ name, src, className }: AvatarProps) {
       aria-label={name}
       style={src ? { backgroundImage: `url(${src})` } : undefined}
       className={cn(
-        "inline-flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-habit-art bg-cover bg-center text-xs font-semibold text-accent-fg border border-line",
+        "inline-flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent bg-cover bg-center text-xs font-semibold text-accent-fg border border-line",
         className,
       )}
     >

@@ -2,34 +2,50 @@
 
 :root {
   color-scheme: light dark;
-  --canvas: light-dark(#F4F5F7, #0E1014);
-  --surface: light-dark(#FFFFFF, #161920);
-  --surface-muted: light-dark(#F5F6F8, #1C2028);
-  --line: light-dark(#ECEEF2, #262B35);
-  --line-strong: light-dark(#DCE0E7, #323845);
-  --fg: light-dark(#1B1E24, #E9ECF1);
-  --fg-secondary: light-dark(#5F6672, #A3AAB6);
-  --fg-muted: light-dark(#9AA1AC, #6E7684);
-  --accent: light-dark(#5B8DEF, #7AA3F3);
-  --accent-soft: light-dark(#93B7F6, #3D5FA8);
-  --accent-fg: light-dark(#14213D, #F5F8FF);
-  --success: light-dark(#43B36A, #55C27C);
-  --status-todo: light-dark(#5B8DEF, #7AA3F3);
-  --status-progress: light-dark(#F5A524, #F5B74C);
-  --status-done: light-dark(#8FB5F5, #5E86D6);
-  --habit-art: light-dark(#A8C8F8, #2C4673);
-  --tag-purple-bg: light-dark(#F0EAFC, #2A2340);
-  --tag-purple-fg: light-dark(#7C5CD6, #B9A4F5);
-  --tag-blue-bg: light-dark(#E7F0FE, #1D2B45);
-  --tag-blue-fg: light-dark(#3F78E0, #8FB4F7);
-  --tag-pink-bg: light-dark(#FCE9F2, #3A2130);
-  --tag-pink-fg: light-dark(#D2548E, #EE93BD);
-  --tag-orange-bg: light-dark(#FDEEE3, #3A2A1F);
-  --tag-orange-fg: light-dark(#DD7A39, #F2A774);
-  --tag-green-bg: light-dark(#E2F5EB, #1C3328);
-  --tag-green-fg: light-dark(#2F9A64, #7DD3A6);
-  --tag-gray-bg: light-dark(#EEF0F3, #262B35);
-  --tag-gray-fg: light-dark(#5F6672, #A3AAB6);
+  --canvas: light-dark(#EEF2F6, #0E1230);
+  --surface: light-dark(#FFFFFF, #161B3F);
+  --surface-muted: light-dark(#F8FAFC, #1B2150);
+  --line: light-dark(#E4E9F2, #2A3170);
+  --line-strong: light-dark(#D5DCE8, #39418A);
+  --fg: light-dark(#1A1D26, #EEF2F6);
+  --fg-secondary: light-dark(#5F6B85, #B4BED3);
+  --fg-muted: light-dark(#8F9BB3, #8F9BB3);
+  --accent: light-dark(#3B82F6, #5B9BFF);
+  --accent-strong: light-dark(#2563EB, #7DB0FF);
+  --accent-soft: light-dark(#EDF2FE, #1E2A5A);
+  --accent-fg: light-dark(#FFFFFF, #0E1230);
+  --berry: light-dark(#DE3B75, #F0679A);
+  --berry-soft: light-dark(#FDECEF, #3A1F35);
+  --navy: #1E255E;
+  --navy-fg: #FFFFFF;
+  --navy-muted: #AEB8E6;
+  --success: light-dark(#10B981, #34D399);
+  --status-todo: light-dark(#3B82F6, #5B9BFF);
+  --status-progress: light-dark(#DE3B75, #F0679A);
+  --status-done: light-dark(#1E255E, #8E9BFF);
+  --habit-art: light-dark(#EDF2FE, #1E2A5A);
+  --habit-lavender-bg: light-dark(#EDF2FE, #1E2A5A);
+  --habit-lavender-icon: light-dark(#3B82F6, #8FB8FF);
+  --habit-rose-bg: light-dark(#FDECEF, #3A1F35);
+  --habit-rose-icon: light-dark(#DE3B75, #F38DB3);
+  --habit-navy-bg: #1E255E;
+  --habit-navy-icon: #FFFFFF;
+  --habit-peach-bg: light-dark(#FFF1E6, #3A2618);
+  --habit-peach-icon: light-dark(#F97316, #FDBA74);
+  --habit-mint-bg: light-dark(#E7F8F0, #15352A);
+  --habit-mint-icon: light-dark(#10B981, #6EE7B7);
+  --tag-blue-bg: light-dark(#EDF2FE, #1E2A5A);
+  --tag-blue-fg: light-dark(#3B82F6, #8FB8FF);
+  --tag-pink-bg: light-dark(#FDECEF, #3A1F35);
+  --tag-pink-fg: light-dark(#DE3B75, #F38DB3);
+  --tag-purple-bg: light-dark(#F1ECFE, #2B2352);
+  --tag-purple-fg: light-dark(#7C5CFA, #B7A5FF);
+  --tag-orange-bg: light-dark(#FFF1E6, #3A2618);
+  --tag-orange-fg: light-dark(#F97316, #FDBA74);
+  --tag-green-bg: light-dark(#E7F8F0, #15352A);
+  --tag-green-fg: light-dark(#10B981, #6EE7B7);
+  --tag-gray-bg: light-dark(#EEF2F6, #262C55);
+  --tag-gray-fg: light-dark(#5F6B85, #B4BED3);
 }
 
 :root[data-theme="light"] {
@@ -50,13 +66,29 @@
   --color-fg-secondary: var(--fg-secondary);
   --color-fg-muted: var(--fg-muted);
   --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
   --color-accent-soft: var(--accent-soft);
   --color-accent-fg: var(--accent-fg);
+  --color-berry: var(--berry);
+  --color-berry-soft: var(--berry-soft);
+  --color-navy: var(--navy);
+  --color-navy-fg: var(--navy-fg);
+  --color-navy-muted: var(--navy-muted);
   --color-success: var(--success);
   --color-status-todo: var(--status-todo);
   --color-status-progress: var(--status-progress);
   --color-status-done: var(--status-done);
   --color-habit-art: var(--habit-art);
+  --color-habit-lavender-bg: var(--habit-lavender-bg);
+  --color-habit-lavender-icon: var(--habit-lavender-icon);
+  --color-habit-rose-bg: var(--habit-rose-bg);
+  --color-habit-rose-icon: var(--habit-rose-icon);
+  --color-habit-navy-bg: var(--habit-navy-bg);
+  --color-habit-navy-icon: var(--habit-navy-icon);
+  --color-habit-peach-bg: var(--habit-peach-bg);
+  --color-habit-peach-icon: var(--habit-peach-icon);
+  --color-habit-mint-bg: var(--habit-mint-bg);
+  --color-habit-mint-icon: var(--habit-mint-icon);
   --color-tag-purple-bg: var(--tag-purple-bg);
   --color-tag-purple-fg: var(--tag-purple-fg);
   --color-tag-blue-bg: var(--tag-blue-bg);
@@ -69,7 +101,7 @@
   --color-tag-green-fg: var(--tag-green-fg);
   --color-tag-gray-bg: var(--tag-gray-bg);
   --color-tag-gray-fg: var(--tag-gray-fg);
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
   --radius-card: 14px;
   --radius-control: 10px;
 }
@@ -91,5 +123,115 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@keyframes pop {
+  0% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.15;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+@keyframes draw-check {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes bell-swing {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  25% {
+    rotate: 14deg;
+  }
+  50% {
+    rotate: -12deg;
+  }
+  75% {
+    rotate: 8deg;
+  }
+}
+
+@keyframes soft-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .icon-anim svg {
+    transition: transform 200ms ease-out;
+  }
+  .icon-anim:hover svg {
+    transform: rotate(-8deg) scale(1.08);
+  }
+  .icon-anim:active svg {
+    transform: scale(0.9);
+  }
+
+  .plus-spin svg {
+    transition: rotate 200ms ease-out;
+  }
+  .plus-spin:hover svg {
+    rotate: 90deg;
+  }
+
+  .theme-seg[aria-pressed="true"] {
+    animation: pop 220ms ease-out;
+  }
+  .theme-seg .sun-icon,
+  .theme-seg .moon-icon {
+    transition: rotate 200ms ease-out;
+  }
+  .theme-seg:hover .sun-icon {
+    rotate: 45deg;
+  }
+  .theme-seg:hover .moon-icon {
+    rotate: -15deg;
+  }
+
+  .checkbox-input:checked {
+    animation: pop 240ms ease-out;
+  }
+  .checkbox-input:checked ~ .check-mark path {
+    stroke-dasharray: 24;
+    animation: draw-check 240ms ease-out;
+  }
+
+  .bell-swing:hover svg {
+    animation: bell-swing 600ms ease-in-out;
+  }
+  .reminder-dot {
+    animation: soft-pulse 2s ease-in-out infinite;
+  }
+
+  .anim-pop-in[data-state="open"] {
+    animation: pop-in 150ms ease-out;
   }
 }

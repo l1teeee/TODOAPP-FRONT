@@ -29,7 +29,7 @@ export function Dialog({
         <RadixDialog.Overlay className="fixed inset-0 z-40 bg-fg/40 backdrop-blur-[1px]" />
         <RadixDialog.Content
           className={cn(
-            "fixed left-1/2 top-1/2 z-50 w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-card border border-line bg-surface p-6 text-fg shadow-xl focus:outline-none max-h-[90vh] overflow-y-auto",
+            "anim-pop-in fixed left-1/2 top-1/2 z-50 w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-card border border-line bg-surface p-6 text-fg shadow-xl focus:outline-none max-h-[90vh] overflow-y-auto",
             className,
           )}
         >

@@ -13,7 +13,7 @@ export function ActivityDetailCard({
   tagsSection,
 }: ActivityDetailCardProps) {
   return (
-    <div className="rounded-card bg-surface-muted p-4">
+    <div className="rounded-card bg-accent-soft p-4">
       <h2 className="text-base font-semibold text-fg">{activity.title}</h2>
       {activity.description ? (
         <p className="mt-2 text-xs leading-relaxed text-fg-secondary">

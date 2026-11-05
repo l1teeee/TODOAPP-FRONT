@@ -61,9 +61,9 @@ export function AppSidebar({ onNavigate, className }: AppSidebarProps) {
                   onClick={onNavigate}
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "relative flex items-center gap-3 rounded-l-control px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                    "icon-anim relative flex items-center gap-3 rounded-l-control px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                     isActive
-                      ? "font-semibold text-fg"
+                      ? "bg-accent-soft font-semibold text-accent"
                       : "font-medium text-fg-secondary hover:bg-surface-muted hover:text-fg",
                   )}
                 >
@@ -97,9 +97,9 @@ export function AppSidebar({ onNavigate, className }: AppSidebarProps) {
                 onClick={onNavigate}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-3 rounded-control px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                  "icon-anim flex items-center gap-3 rounded-control px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                   isActive
-                    ? "font-semibold text-fg bg-surface-muted"
+                    ? "bg-accent-soft font-semibold text-accent"
                     : "font-medium text-fg-secondary hover:bg-surface-muted hover:text-fg",
                 )}
               >

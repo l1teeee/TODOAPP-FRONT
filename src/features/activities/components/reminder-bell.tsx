@@ -16,13 +16,13 @@ export function ReminderBell() {
     <Popover>
       <PopoverTrigger asChild>
         <div className="relative inline-flex">
-          <IconButton label="Today's reminders">
+          <IconButton label="Today's reminders" className="bell-swing">
             <Bell className="h-5 w-5" aria-hidden="true" />
           </IconButton>
           {hasReminders ? (
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute right-2 top-2 h-2 w-2 rounded-full bg-accent"
+              className="reminder-dot pointer-events-none absolute right-2 top-2 h-2 w-2 rounded-full bg-berry"
             />
           ) : null}
         </div>
@@ -46,7 +46,7 @@ export function ReminderBell() {
                 <span className="truncate font-medium text-fg">
                   {reminder.title}
                 </span>
-                <span className="shrink-0 font-semibold text-fg-secondary">
+                <span className="shrink-0 font-semibold text-berry">
                   {reminder.startTime ?? "--:--"}
                 </span>
               </li>

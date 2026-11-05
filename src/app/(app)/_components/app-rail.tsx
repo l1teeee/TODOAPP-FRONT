@@ -54,9 +54,9 @@ export function AppRail({ onNavigate, className }: AppRailProps) {
               title={item.label}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                "icon-anim inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                 active
-                  ? "bg-surface-muted text-fg border border-line-strong shadow-xs"
+                  ? "bg-accent-soft text-accent"
                   : "text-fg-secondary hover:bg-surface-muted hover:text-fg",
               )}
             >
@@ -80,9 +80,9 @@ export function AppRail({ onNavigate, className }: AppRailProps) {
               title={item.label}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                "icon-anim inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                 active
-                  ? "bg-surface-muted text-fg border border-line-strong"
+                  ? "bg-accent-soft text-accent"
                   : "text-fg-secondary hover:bg-surface-muted hover:text-fg",
               )}
             >

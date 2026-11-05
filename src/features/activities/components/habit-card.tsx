@@ -5,13 +5,22 @@ import { cn } from "@/shared/lib/cn";
 import type { Activity } from "../model/activity";
 import { ActivityIcon } from "./activity-icon";
 
+const ART_VARIANTS = [
+  "bg-habit-lavender-bg text-habit-lavender-icon",
+  "bg-habit-rose-bg text-habit-rose-icon",
+  "bg-habit-navy-bg text-habit-navy-icon",
+  "bg-habit-peach-bg text-habit-peach-icon",
+  "bg-habit-mint-bg text-habit-mint-icon",
+] as const;
+
 export interface HabitCardProps {
   activity: Activity;
+  index: number;
   selected?: boolean;
   onSelect: (id: string) => void;
 }
 
-export function HabitCard({ activity, selected, onSelect }: HabitCardProps) {
+export function HabitCard({ activity, index, selected, onSelect }: HabitCardProps) {
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -38,7 +47,12 @@ export function HabitCard({ activity, selected, onSelect }: HabitCardProps) {
           : "border border-line hover:border-line-strong",
       )}
     >
-      <div className="flex aspect-[16/10] w-full items-center justify-center rounded-[10px] bg-habit-art text-accent-fg transition-transform group-hover:scale-[1.01]">
+      <div
+        className={cn(
+          "flex aspect-[16/10] w-full items-center justify-center rounded-[10px] transition-transform group-hover:scale-[1.01]",
+          ART_VARIANTS[index % ART_VARIANTS.length],
+        )}
+      >
         <ActivityIcon icon={activity.icon} className="h-9 w-9" />
       </div>
       <div className="mt-2.5 px-0.5">

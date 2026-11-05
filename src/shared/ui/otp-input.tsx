@@ -9,10 +9,9 @@ import {
 } from "react";
 import { cn } from "@/shared/lib/cn";
 
-const OTP_LENGTH = 6;
-
 export interface OtpInputProps {
   id?: string;
+  length: number;
   value: string;
   onChange: (value: string) => void;
   label?: string;
@@ -26,9 +25,10 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
   (
     {
       id,
+      length,
       value,
       onChange,
-      label = "6-digit verification code",
+      label = `${length}-digit verification code`,
       invalid,
       disabled,
       "aria-describedby": ariaDescribedBy,
@@ -38,13 +38,13 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
   ) => {
     const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
-    const chars = Array.from({ length: OTP_LENGTH }, (_, index) => {
+    const chars = Array.from({ length: length }, (_, index) => {
       const ch = value[index];
       return ch && /\d/.test(ch) ? ch : "";
     });
 
     const focusBox = (index: number) => {
-      const target = inputRefs.current[Math.max(0, Math.min(OTP_LENGTH - 1, index))];
+      const target = inputRefs.current[Math.max(0, Math.min(length - 1, index))];
       target?.focus();
       target?.select();
     };
@@ -64,18 +64,18 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
 
       if (digits.length > 1) {
         const next = [...chars];
-        for (let i = 0; i < digits.length && index + i < OTP_LENGTH; i += 1) {
+        for (let i = 0; i < digits.length && index + i < length; i += 1) {
           next[index + i] = digits[i] ?? "";
         }
         setChars(next);
-        focusBox(Math.min(index + digits.length, OTP_LENGTH - 1));
+        focusBox(Math.min(index + digits.length, length - 1));
         return;
       }
 
       const next = [...chars];
       next[index] = digits[0] ?? "";
       setChars(next);
-      if (index < OTP_LENGTH - 1) {
+      if (index < length - 1) {
         focusBox(index + 1);
       }
     };
@@ -104,7 +104,7 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
         return;
       }
 
-      if (event.key === "ArrowRight" && index < OTP_LENGTH - 1) {
+      if (event.key === "ArrowRight" && index < length - 1) {
         event.preventDefault();
         focusBox(index + 1);
       }
@@ -115,22 +115,23 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
       const pastedDigits = event.clipboardData
         .getData("text")
         .replace(/\D/g, "")
-        .slice(0, OTP_LENGTH);
+        .slice(0, length);
       if (!pastedDigits) return;
 
       const next = Array.from(
-        { length: OTP_LENGTH },
+        { length: length },
         (_, i) => pastedDigits[i] ?? "",
       );
       setChars(next);
-      focusBox(Math.min(pastedDigits.length, OTP_LENGTH - 1));
+      focusBox(Math.min(pastedDigits.length, length - 1));
     };
 
     return (
       <div
         role="group"
         aria-label={label}
-        className={cn("grid grid-cols-6 gap-2", className)}
+        style={{ gridTemplateColumns: `repeat(${length}, minmax(0, 1fr))` }}
+        className={cn("grid gap-2", className)}
       >
         {chars.map((digit, index) => (
           <input
@@ -151,7 +152,7 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
             pattern="[0-9]*"
             maxLength={1}
             autoComplete={index === 0 ? "one-time-code" : "off"}
-            aria-label={`Digit ${index + 1} of ${OTP_LENGTH}`}
+            aria-label={`Digit ${index + 1} of ${length}`}
             aria-invalid={invalid || undefined}
             aria-describedby={index === 0 ? ariaDescribedBy : undefined}
             disabled={disabled}

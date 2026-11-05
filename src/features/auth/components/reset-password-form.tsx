@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState, type FormEvent } from "react";
+import { publicEnv } from "@/shared/config/public-env";
 import { Alert } from "@/shared/ui/alert";
 import { Button } from "@/shared/ui/button";
 import { Field } from "@/shared/ui/field";
@@ -54,11 +55,14 @@ export function ResetPasswordForm() {
       confirmPassword: true,
     });
 
-    const nextErrors = validateResetPasswordForm({
-      code,
-      newPassword,
-      confirmPassword,
-    });
+    const nextErrors = validateResetPasswordForm(
+      {
+        code,
+        newPassword,
+        confirmPassword,
+      },
+      publicEnv.otpLength,
+    );
     setErrors(nextErrors);
 
     if (nextErrors.code) {
@@ -99,8 +103,9 @@ export function ResetPasswordForm() {
           <Alert variant="error">{authErrorMessage(apiErrorCode)}</Alert>
         ) : null}
 
-        <Field label="6-digit code" error={errors.code}>
+        <Field label={`${publicEnv.otpLength}-digit code`} error={errors.code}>
           <OtpInput
+            length={publicEnv.otpLength}
             ref={codeRef}
             value={code}
             disabled={resetMutation.isPending}
@@ -109,7 +114,7 @@ export function ResetPasswordForm() {
               if (touched.code) {
                 setErrors((prev) => ({
                   ...prev,
-                  code: validateCodeField(next),
+                  code: validateCodeField(next, publicEnv.otpLength),
                 }));
               }
             }}

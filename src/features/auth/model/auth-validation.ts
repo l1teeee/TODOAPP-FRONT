@@ -1,5 +1,4 @@
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const CODE_REGEX = /^\d{6}$/;
 
 export function validateEmailField(email: string): string | undefined {
   const trimmed = email.trim();
@@ -43,9 +42,12 @@ export function validateFullNameField(fullName: string): string | undefined {
   return undefined;
 }
 
-export function validateCodeField(code: string): string | undefined {
-  if (!CODE_REGEX.test(code)) {
-    return "Enter the 6-digit code.";
+export function validateCodeField(
+  code: string,
+  length: number,
+): string | undefined {
+  if (!new RegExp(`^[0-9]{${length}}$`).test(code)) {
+    return `Enter the ${length}-digit code.`;
   }
   return undefined;
 }
@@ -99,11 +101,12 @@ export interface VerifyEmailFieldErrors {
   code?: string;
 }
 
-export function validateVerifyEmailForm(values: {
-  code: string;
-}): VerifyEmailFieldErrors {
+export function validateVerifyEmailForm(
+  values: { code: string },
+  codeLength: number,
+): VerifyEmailFieldErrors {
   const errors: VerifyEmailFieldErrors = {};
-  const codeError = validateCodeField(values.code);
+  const codeError = validateCodeField(values.code, codeLength);
   if (codeError) errors.code = codeError;
   return errors;
 }
@@ -127,13 +130,16 @@ export interface ResetPasswordFieldErrors {
   confirmPassword?: string;
 }
 
-export function validateResetPasswordForm(values: {
-  code: string;
-  newPassword: string;
-  confirmPassword: string;
-}): ResetPasswordFieldErrors {
+export function validateResetPasswordForm(
+  values: {
+    code: string;
+    newPassword: string;
+    confirmPassword: string;
+  },
+  codeLength: number,
+): ResetPasswordFieldErrors {
   const errors: ResetPasswordFieldErrors = {};
-  const codeError = validateCodeField(values.code);
+  const codeError = validateCodeField(values.code, codeLength);
   if (codeError) errors.code = codeError;
   const passwordError = validatePasswordField(values.newPassword);
   if (passwordError) errors.newPassword = passwordError;

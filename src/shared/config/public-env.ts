@@ -27,6 +27,15 @@ function origin(value: string | undefined, name: string): string {
   return url.origin;
 }
 
+function otpLength(value: string | undefined, name: string): number {
+  const raw = required(value, name);
+  const parsed = Number(raw);
+  if (!Number.isInteger(parsed) || parsed < 6 || parsed > 10) {
+    throw new Error(`${name} must be an integer from 6 to 10`);
+  }
+  return parsed;
+}
+
 export const publicEnv = {
   get apiUrl(): string {
     return origin(process.env.NEXT_PUBLIC_API_URL, "NEXT_PUBLIC_API_URL");
@@ -38,6 +47,12 @@ export const publicEnv = {
     return required(
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
       "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+    );
+  },
+  get otpLength(): number {
+    return otpLength(
+      process.env.NEXT_PUBLIC_OTP_LENGTH,
+      "NEXT_PUBLIC_OTP_LENGTH",
     );
   },
   get turnstileSiteKey(): string {

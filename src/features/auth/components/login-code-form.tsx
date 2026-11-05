@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState, type FormEvent } from "react";
+import { publicEnv } from "@/shared/config/public-env";
 import { Alert } from "@/shared/ui/alert";
 import { Button } from "@/shared/ui/button";
 import { Field } from "@/shared/ui/field";
@@ -55,7 +56,7 @@ export function LoginCodeForm() {
   return (
     <AuthCard
       title="Log in with a code"
-      subtitle="Enter your email and we will send you a 6-digit code."
+      subtitle={`Enter your email and we will send you a ${publicEnv.otpLength}-digit code.`}
       footer={
         <>
           Don&apos;t have an account? <Link href="/register">Create one</Link>

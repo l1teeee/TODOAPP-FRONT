@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState, type FormEvent } from "react";
+import { publicEnv } from "@/shared/config/public-env";
 import { Alert } from "@/shared/ui/alert";
 import { Button } from "@/shared/ui/button";
 import { Field } from "@/shared/ui/field";
@@ -39,7 +40,7 @@ export function VerifyEmailForm() {
     setApiErrorCode(null);
     setTouched({ code: true });
 
-    const nextErrors = validateVerifyEmailForm({ code });
+    const nextErrors = validateVerifyEmailForm({ code }, publicEnv.otpLength);
     setErrors(nextErrors);
 
     if (nextErrors.code) {
@@ -63,7 +64,7 @@ export function VerifyEmailForm() {
   return (
     <AuthCard
       title="Check your email"
-      subtitle={`We sent a 6-digit code to ${email}.`}
+      subtitle={`We sent a ${publicEnv.otpLength}-digit code to ${email}.`}
       footer={
         <>
           Wrong email or no code?{" "}
@@ -83,6 +84,7 @@ export function VerifyEmailForm() {
 
         <Field label="Verification code" error={errors.code}>
           <OtpInput
+            length={publicEnv.otpLength}
             ref={codeRef}
             value={code}
             disabled={verifyMutation.isPending}
@@ -91,7 +93,7 @@ export function VerifyEmailForm() {
               if (touched.code) {
                 setErrors((prev) => ({
                   ...prev,
-                  code: validateCodeField(next),
+                  code: validateCodeField(next, publicEnv.otpLength),
                 }));
               }
             }}

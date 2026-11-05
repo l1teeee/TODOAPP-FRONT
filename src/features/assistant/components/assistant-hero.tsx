@@ -11,7 +11,7 @@ import { DURATION, EASE } from "@/shared/motion/motion-tokens";
 import { MeshGradientSurface } from "@/shared/ui/mesh-gradient-surface";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { useDailyBrief } from "../api/use-daily-brief";
-import { AssistantOrb } from "./assistant-orb";
+import { AssistantMark } from "./assistant-mark";
 import { composeLocalBrief } from "../lib/compose-local-brief";
 import type { DailyBriefInput } from "../model/daily-brief";
 
@@ -121,11 +121,11 @@ export function AssistantHero({
       <div className="relative z-10 flex flex-col gap-5 p-8 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0 max-w-2xl">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-surface/70 px-3 py-1 text-xs font-semibold text-fg-secondary">
-            <AssistantOrb size={16} active={typing} />
+            <AssistantMark size={16} typing={typing} />
             {brief.source === "ai" ? "AI assistant" : "Smart summary"}
           </span>
           <div className="mt-4 flex items-center gap-3">
-            <AssistantOrb size={44} active={typing} />
+            <AssistantMark size={40} typing={typing} />
             <h1 className="text-[36px] font-bold leading-tight tracking-tight text-fg md:text-[40px]">
               {local.firstName ? `Hi, ${local.firstName}` : "Hi there"}
             </h1>

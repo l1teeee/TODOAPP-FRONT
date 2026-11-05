@@ -274,33 +274,20 @@ html.theme-fading *::after {
   text-shadow: 0 2px 12px color-mix(in srgb, var(--navy) 45%, transparent);
 }
 
-@keyframes orb-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes orb-breathe {
+@keyframes mark-bounce {
   0%,
+  60%,
   100% {
-    transform: scale(1);
+    transform: translateY(0);
   }
-  50% {
-    transform: scale(1.06);
+  30% {
+    transform: translateY(var(--mark-bounce));
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .assistant-orb {
-    animation: orb-breathe 4s ease-in-out infinite;
-  }
-
-  .assistant-orb-spin {
-    animation: orb-spin 8s linear infinite;
-  }
-
-  .assistant-orb-spin-fast {
-    animation-duration: 2.5s;
+  .assistant-mark-dot {
+    animation: mark-bounce 1.1s ease-in-out infinite;
   }
 }
 

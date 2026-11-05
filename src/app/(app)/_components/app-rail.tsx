@@ -19,6 +19,8 @@ import {
   useActiveIndicator,
   useShellEntrance,
 } from "@/shared/motion/use-entrance";
+import { useTheme } from "@/shared/theme/use-theme";
+import { BrandMark } from "@/shared/ui/brand-mark";
 import { SidebarToggle } from "./sidebar-toggle";
 
 const TOP_ITEMS = [
@@ -39,6 +41,7 @@ export function AppRail({ onNavigate, className }: AppRailProps) {
   const router = useRouter();
   const signOutMutation = useSignOut();
   const navRef = useRef<HTMLElement>(null);
+  const { resolved } = useTheme();
 
   useShellEntrance(navRef, { x: -16 });
   useActiveIndicator(
@@ -67,6 +70,15 @@ export function AppRail({ onNavigate, className }: AppRailProps) {
       )}
     >
       <div className="flex flex-col items-center gap-3">
+        <Link
+          href="/today"
+          onClick={onNavigate}
+          aria-label="TODO App home"
+          title="TODO App home"
+          className="mb-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        >
+          <BrandMark size={36} variant={resolved === "dark" ? "reverse" : "color"} />
+        </Link>
         {TOP_ITEMS.map((item, index) => {
           if (item.href === "/summary" && !modules?.includes("summary")) return null;
           const Icon = item.icon;

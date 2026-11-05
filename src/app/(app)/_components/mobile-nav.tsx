@@ -6,6 +6,8 @@ import { useState } from "react";
 import { useSignOut } from "@/features/auth/api/use-auth";
 import { UserMenu } from "@/features/profile/components/user-menu";
 import { ThemeToggle } from "@/shared/theme/theme-toggle";
+import { useTheme } from "@/shared/theme/use-theme";
+import { BrandMark } from "@/shared/ui/brand-mark";
 import { IconButton } from "@/shared/ui/icon-button";
 import { Sheet } from "@/shared/ui/sheet";
 import { AppRail } from "./app-rail";
@@ -15,6 +17,7 @@ export function MobileNav() {
   const router = useRouter();
   const signOutMutation = useSignOut();
   const [open, setOpen] = useState(false);
+  const { resolved } = useTheme();
 
   const handleSignOut = () => {
     signOutMutation.mutate(undefined, {
@@ -33,6 +36,7 @@ export function MobileNav() {
         >
           <Menu className="h-5 w-5" aria-hidden="true" />
         </IconButton>
+        <BrandMark size={28} variant={resolved === "dark" ? "reverse" : "color"} />
         <span className="text-sm font-semibold text-fg">TODO App</span>
       </div>
 

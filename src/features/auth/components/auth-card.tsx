@@ -1,9 +1,10 @@
 "use client";
 
-import { Check } from "lucide-react";
 import { useRef, type ReactNode } from "react";
 import { cn } from "@/shared/lib/cn";
 import { useShellEntrance } from "@/shared/motion/use-entrance";
+import { useTheme } from "@/shared/theme/use-theme";
+import { BrandMark } from "@/shared/ui/brand-mark";
 
 export interface AuthCardProps {
   title: string;
@@ -32,6 +33,7 @@ export function AuthCard({
 }: AuthCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   useShellEntrance(cardRef, { y: 12, delay: 0.08 });
+  const { resolved } = useTheme();
 
   return (
     <div
@@ -40,9 +42,7 @@ export function AuthCard({
       className={cn("w-full max-w-[450px]", className)}
     >
       <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-navy text-navy-fg">
-          <Check className="h-5 w-5" strokeWidth={3} aria-hidden="true" />
-        </span>
+        <BrandMark size={40} variant={resolved === "dark" ? "reverse" : "color"} />
         <span className="text-[15px] font-semibold text-fg">TODO App</span>
       </div>
 

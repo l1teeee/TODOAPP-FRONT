@@ -1,7 +1,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Suspense, useRef, type ReactNode, type RefObject } from "react";
+import {
+  Suspense,
+  useEffect,
+  useRef,
+  type ReactNode,
+  type RefObject,
+} from "react";
+import { useProfile, useUpdateProfile } from "@/features/profile/api/use-profile";
 import {
   gsap,
   markWillChange,
@@ -10,6 +17,7 @@ import {
 } from "@/shared/motion/gsap";
 import { DURATION, EASE } from "@/shared/motion/motion-tokens";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { RequireSession } from "@/shared/auth/auth-guard";
 import { AppRail } from "./_components/app-rail";
 import { AppSidebar } from "./_components/app-sidebar";
 import { DetailPanel } from "./_components/detail-panel";
@@ -150,7 +158,7 @@ function useCollapsiblePanel({
   );
 }
 
-export default function AppLayout({ children }: { children: ReactNode }) {
+function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const sidebar = useSidebarState();
   const detailPanel = useDetailPanelState();
@@ -210,6 +218,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex h-dvh w-full flex-col overflow-hidden bg-canvas lg:grid lg:grid-cols-[72px_auto_minmax(0,1fr)] xl:grid-cols-[72px_auto_minmax(0,1fr)_auto]">
+      <ProfileTimezoneSync />
       <Suspense fallback={<div className="h-14 border-b border-line bg-surface lg:hidden" />}>
         <MobileNav />
       </Suspense>
@@ -251,5 +260,43 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function ProfileTimezoneSync() {
+  const { data: profile } = useProfile();
+  const { mutate: updateProfile, error } = useUpdateProfile();
+  const syncedProfileId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!profile || syncedProfileId.current === profile.id) return;
+    syncedProfileId.current = profile.id;
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (timezone !== profile.timezone) {
+      updateProfile({ timezone });
+    }
+  }, [profile, updateProfile]);
+
+  if (error) throw error;
+  return null;
+}
+
+export default function AppLayout({ children }: { children: ReactNode }) {
+  return (
+    <RequireSession
+      fallback={
+        <div className="flex h-dvh w-full bg-canvas" aria-busy="true">
+          <SidebarFallback />
+          <div className="flex-1 space-y-4 p-6">
+            <Skeleton className="h-8 w-1/3" />
+            <Skeleton className="h-44 w-full rounded-card" />
+            <Skeleton className="h-32 w-full rounded-card" />
+          </div>
+          <DetailFallback />
+        </div>
+      }
+    >
+      <AppShell>{children}</AppShell>
+    </RequireSession>
   );
 }

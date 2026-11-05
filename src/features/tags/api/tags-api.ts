@@ -1,10 +1,15 @@
-// Temporary in-memory demo API; replaced by HTTP calls in the API integration brief
-import { simulateLatency } from "@/shared/lib/simulate-latency";
+import { ApiError } from "@/shared/api/api-error";
+import { apiData, getHttpClient } from "@/shared/api/http-client";
 import type { Tag, TagColor } from "../model/tag";
 
-export class TagConflictError extends Error {
+export class TagConflictError extends ApiError {
   constructor() {
-    super("A tag with this name already exists.");
+    super(409, {
+      error: {
+        code: "TAG_NAME_TAKEN",
+        message: "A tag with this name already exists.",
+      },
+    });
     this.name = "TagConflictError";
   }
 }
@@ -14,58 +19,39 @@ export interface TagInput {
   color: TagColor;
 }
 
-let tagsStore: Tag[] = [];
-let nextTagCounter = 0;
-
-function assertNameAvailable(name: string, exceptId: string | null): void {
-  const normalized = name.trim().toLowerCase();
-  const taken = tagsStore.some(
-    (item) => item.id !== exceptId && item.name.toLowerCase() === normalized,
-  );
-  if (taken) {
-    throw new TagConflictError();
-  }
-}
-
 export async function fetchTags(): Promise<Tag[]> {
-  await simulateLatency();
-  return tagsStore.map((tag) => ({ ...tag }));
+  const data = apiData(await getHttpClient().GET("/v1/tags"));
+  return data.items;
 }
 
 export async function createTag(input: TagInput): Promise<Tag> {
-  await simulateLatency();
-  assertNameAvailable(input.name, null);
-  const created: Tag = {
-    id: `tag-${++nextTagCounter}`,
-    name: input.name.trim(),
-    color: input.color,
-  };
-  tagsStore = [...tagsStore, created];
-  return { ...created };
+  try {
+    return apiData(await getHttpClient().POST("/v1/tags", { body: input }));
+  } catch (error) {
+    if (error instanceof ApiError && error.code === "TAG_NAME_TAKEN") {
+      throw new TagConflictError();
+    }
+    throw error;
+  }
 }
 
 export async function updateTag(
   id: string,
   patch: Partial<TagInput>,
 ): Promise<Tag> {
-  await simulateLatency();
-  const existing = tagsStore.find((item) => item.id === id);
-  if (!existing) {
-    throw new Error(`Tag ${id} not found`);
+  try {
+    return apiData(await getHttpClient().PATCH("/v1/tags/{id}", {
+      params: { path: { id } },
+      body: patch,
+    }));
+  } catch (error) {
+    if (error instanceof ApiError && error.code === "TAG_NAME_TAKEN") {
+      throw new TagConflictError();
+    }
+    throw error;
   }
-  if (patch.name !== undefined) {
-    assertNameAvailable(patch.name, id);
-  }
-  const updated: Tag = {
-    ...existing,
-    name: patch.name !== undefined ? patch.name.trim() : existing.name,
-    color: patch.color ?? existing.color,
-  };
-  tagsStore = tagsStore.map((item) => (item.id === id ? updated : item));
-  return { ...updated };
 }
 
 export async function deleteTag(id: string): Promise<void> {
-  await simulateLatency();
-  tagsStore = tagsStore.filter((item) => item.id !== id);
+  await getHttpClient().DELETE("/v1/tags/{id}", { params: { path: { id } } });
 }

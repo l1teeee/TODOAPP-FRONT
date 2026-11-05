@@ -1,6 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import type {
   ActivityInput,
   ActivityPatch,
@@ -45,16 +50,20 @@ export function useActivity(id: string | null) {
 }
 
 export function useCompletedActivities() {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: activityKeys.completed(),
-    queryFn: () => listCompleted(),
+    queryFn: ({ pageParam }) => listCompleted(pageParam),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
   });
 }
 
 export function useTrashedActivities() {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: activityKeys.trashed(),
-    queryFn: () => listTrashed(),
+    queryFn: ({ pageParam }) => listTrashed(pageParam),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
   });
 }
 

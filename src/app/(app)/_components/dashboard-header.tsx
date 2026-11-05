@@ -8,6 +8,7 @@ import { useSignOut } from "@/features/auth/api/use-auth";
 import { useLists } from "@/features/lists/api/use-lists";
 import { UserMenu } from "@/features/profile/components/user-menu";
 import { useTags } from "@/features/tags/api/use-tags";
+import { useEnabledModules } from "@/shared/api/use-enabled-modules";
 import { ThemeToggle } from "@/shared/theme/theme-toggle";
 import { Button } from "@/shared/ui/button";
 import { SearchField } from "@/shared/ui/search-field";
@@ -31,6 +32,7 @@ export interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ view, onNewActivity }: DashboardHeaderProps) {
+  const { data: modules } = useEnabledModules();
   const router = useRouter();
   const signOutMutation = useSignOut();
   const { q, list: listId, tag: tagId, setParam } = useDashboardParams();
@@ -72,10 +74,12 @@ export function DashboardHeader({ view, onNewActivity }: DashboardHeaderProps) {
     }, 250);
   };
 
-  const activeList = listId
+  const activeList = modules?.includes("lists") && listId
     ? lists?.find((item) => item.id === listId)
     : undefined;
-  const activeTag = tagId ? tags?.find((item) => item.id === tagId) : undefined;
+  const activeTag = modules?.includes("tags") && tagId
+    ? tags?.find((item) => item.id === tagId)
+    : undefined;
 
   const heading = activeList
     ? activeList.name

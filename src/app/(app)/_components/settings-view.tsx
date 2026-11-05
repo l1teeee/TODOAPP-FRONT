@@ -7,6 +7,7 @@ import { useSignOut } from "@/features/auth/api/use-auth";
 import { useProfile } from "@/features/profile/api/use-profile";
 import { ProfileForm } from "@/features/profile/components/profile-form";
 import { useEntrance } from "@/shared/motion/use-entrance";
+import { useEnabledModules } from "@/shared/api/use-enabled-modules";
 import { useTheme, type ThemePreference } from "@/shared/theme/use-theme";
 import { Button } from "@/shared/ui/button";
 import { SegmentedControl } from "@/shared/ui/segmented-control";
@@ -20,6 +21,10 @@ const THEME_OPTIONS: readonly { value: ThemePreference; label: string }[] = [
 ];
 
 export function SettingsView() {
+  const { data: modules } = useEnabledModules();
+  const canLoadSamples = ["lists", "tags", "subtasks"].every((module) =>
+    modules?.includes(module),
+  );
   const router = useRouter();
   const { data: profile, isLoading } = useProfile();
   const { preference, setPreference } = useTheme();
@@ -84,20 +89,22 @@ export function SettingsView() {
           <div>
             <p className="text-xs font-semibold text-fg-secondary">Email</p>
             <p className="mt-1 text-sm text-fg">
-              {profile?.email ?? "evelyn@example.com"}
+              {profile?.email}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button
-              variant="secondary"
-              disabled={sampleData.isLoading}
-              onClick={() => void sampleData.load()}
-            >
-              {sampleData.isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-              ) : null}
-              <span>Load sample data</span>
-            </Button>
+            {canLoadSamples ? (
+              <Button
+                variant="secondary"
+                disabled={sampleData.isLoading}
+                onClick={() => void sampleData.load()}
+              >
+                {sampleData.isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : null}
+                <span>Load sample data</span>
+              </Button>
+            ) : null}
             <Button
               variant="secondary"
               disabled={signOutMutation.isPending}

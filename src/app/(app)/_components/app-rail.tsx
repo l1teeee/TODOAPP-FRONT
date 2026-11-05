@@ -13,6 +13,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Fragment, useRef } from "react";
 import { ReminderBell } from "@/features/activities/components/reminder-bell";
 import { useSignOut } from "@/features/auth/api/use-auth";
+import { useEnabledModules } from "@/shared/api/use-enabled-modules";
 import { cn } from "@/shared/lib/cn";
 import {
   useActiveIndicator,
@@ -33,6 +34,7 @@ export interface AppRailProps {
 }
 
 export function AppRail({ onNavigate, className }: AppRailProps) {
+  const { data: modules } = useEnabledModules();
   const pathname = usePathname();
   const router = useRouter();
   const signOutMutation = useSignOut();
@@ -66,6 +68,7 @@ export function AppRail({ onNavigate, className }: AppRailProps) {
     >
       <div className="flex flex-col items-center gap-3">
         {TOP_ITEMS.map((item, index) => {
+          if (item.href === "/summary" && !modules?.includes("summary")) return null;
           const Icon = item.icon;
           const active = pathname === item.href;
           return (

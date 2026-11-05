@@ -1,184 +1,104 @@
-// Temporary in-memory demo API; replaced by HTTP calls in the API integration brief
-import { simulateLatency } from "@/shared/lib/simulate-latency";
+import { apiData, getHttpClient } from "@/shared/api/http-client";
+import type { paths } from "@/shared/api/schema";
 import type {
   Activity,
   ActivityInput,
   ActivityPatch,
   ActivityQuery,
 } from "../model/activity";
-import { matchesViewRange } from "../model/view-range";
+import { viewRange } from "../model/view-range";
 
-let activitiesStore: Activity[] = [];
-let nextActivityCounter = 100;
-
-function cloneActivity(item: Activity): Activity {
-  return { ...item, tagIds: item.tagIds ? [...item.tagIds] : [] };
-}
-
-function compareActivities(a: Activity, b: Activity): number {
-  if (a.kind !== b.kind) {
-    const order = { habit: 0, reminder: 1, task: 2 };
-    return order[a.kind] - order[b.kind];
-  }
-  if (a.kind === "habit") {
-    return (a.startTime ?? "").localeCompare(b.startTime ?? "");
-  }
-  if (a.kind === "reminder") {
-    const dateCmp = (a.scheduledDate ?? "").localeCompare(
-      b.scheduledDate ?? "",
-    );
-    if (dateCmp !== 0) return dateCmp;
-    return (a.startTime ?? "").localeCompare(b.startTime ?? "");
-  }
-  return b.createdAt.localeCompare(a.createdAt);
+interface ActivityPage {
+  items: Activity[];
+  nextCursor: string | null;
 }
 
 export async function fetchActivities(
   query: ActivityQuery,
 ): Promise<Activity[]> {
-  await simulateLatency();
-  const today = new Date();
-  const normalizedQ = query.q?.trim().toLowerCase() ?? "";
-
-  return activitiesStore
-    .filter((activity) => {
-      if (activity.deletedAt !== null) {
-        return false;
-      }
-      if (!matchesViewRange(activity, query.view, today)) {
-        return false;
-      }
-      if (query.listId && activity.listId !== query.listId) {
-        return false;
-      }
-      if (query.tagId && !(activity.tagIds ?? []).includes(query.tagId)) {
-        return false;
-      }
-      if (normalizedQ) {
-        const inTitle = activity.title.toLowerCase().includes(normalizedQ);
-        const inDesc = (activity.description ?? "")
-          .toLowerCase()
-          .includes(normalizedQ);
-        if (!inTitle && !inDesc) {
-          return false;
-        }
-      }
-      return true;
-    })
-    .sort(compareActivities)
-    .map(cloneActivity);
+  const range = viewRange(query.view, new Date());
+  const params: NonNullable<paths["/v1/activities"]["get"]["parameters"]["query"]> = {
+    listId: query.listId,
+    tagId: query.tagId,
+    q: query.q,
+  };
+  if (range.mode === "range") {
+    params.from = range.start;
+    params.to = range.end;
+  } else if (range.mode === "unscheduled") {
+    params.unscheduled = "true";
+  }
+  const data = apiData(await getHttpClient().GET("/v1/activities", {
+    params: { query: params },
+  }));
+  return data.items;
 }
 
 export async function fetchActivity(id: string): Promise<Activity | null> {
-  await simulateLatency();
-  const found = activitiesStore.find(
-    (item) => item.id === id && item.deletedAt === null,
-  );
-  if (!found) return null;
-  return cloneActivity(found);
+  return apiData(await getHttpClient().GET("/v1/activities/{id}", {
+    params: { path: { id } },
+  }));
 }
 
-export async function listCompleted(): Promise<Activity[]> {
-  await simulateLatency();
-  return activitiesStore
-    .filter(
-      (activity) =>
-        activity.deletedAt === null && activity.status === "completed",
-    )
-    .sort((a, b) =>
-      (b.completedAt ?? b.updatedAt).localeCompare(
-        a.completedAt ?? a.updatedAt,
-      ),
-    )
-    .map(cloneActivity);
+export async function listCompleted(cursor?: string): Promise<ActivityPage> {
+  return apiData(await getHttpClient().GET("/v1/activities/completed", {
+    params: { query: { cursor } },
+  }));
 }
 
-export async function listTrashed(): Promise<Activity[]> {
-  await simulateLatency();
-  return activitiesStore
-    .filter((activity) => activity.deletedAt !== null)
-    .sort((a, b) => (b.deletedAt ?? "").localeCompare(a.deletedAt ?? ""))
-    .map(cloneActivity);
+export async function listTrashed(cursor?: string): Promise<ActivityPage> {
+  return apiData(await getHttpClient().GET("/v1/activities/trash", {
+    params: { query: { cursor } },
+  }));
 }
 
 export async function createActivity(input: ActivityInput): Promise<Activity> {
-  await simulateLatency();
-  const nowIso = new Date().toISOString();
-  const created: Activity = {
-    id: `act-${++nextActivityCounter}`,
-    kind: input.kind,
-    title: input.title.trim(),
-    description: input.description?.trim() ? input.description.trim() : null,
-    status: input.status,
-    scheduledDate: input.kind === "habit" ? null : input.scheduledDate,
-    startTime: input.startTime,
-    endTime: input.endTime,
-    location: input.location?.trim() ? input.location.trim() : null,
-    icon: input.icon,
-    listId: input.listId ?? null,
-    tagIds: input.tagIds ? [...input.tagIds] : [],
-    completedAt: input.status === "completed" ? nowIso : null,
-    deletedAt: null,
-    createdAt: nowIso,
-    updatedAt: nowIso,
-  };
-  activitiesStore = [created, ...activitiesStore];
-  return cloneActivity(created);
+  return apiData(await getHttpClient().POST("/v1/activities", {
+    body: {
+      ...input,
+      title: input.title.trim(),
+      description: input.description?.trim() || null,
+      location: input.location?.trim() || null,
+      scheduledDate: input.kind === "habit" ? null : input.scheduledDate,
+    },
+  }));
 }
 
 export async function updateActivity(
   id: string,
   patch: ActivityPatch,
 ): Promise<Activity> {
-  await simulateLatency();
-  const existing = activitiesStore.find((item) => item.id === id);
-  if (!existing) {
-    throw new Error(`Activity ${id} not found`);
-  }
-  const nowIso = new Date().toISOString();
-  const nextStatus = patch.status ?? existing.status;
-  const updated: Activity = {
-    ...existing,
-    ...patch,
-    completedAt:
-      nextStatus === "completed" ? (existing.completedAt ?? nowIso) : null,
-    updatedAt: nowIso,
-  };
-  activitiesStore = activitiesStore.map((item) =>
-    item.id === id ? updated : item,
-  );
-  return cloneActivity(updated);
+  return apiData(await getHttpClient().PATCH("/v1/activities/{id}", {
+    params: { path: { id } },
+    body: {
+      title: patch.title,
+      description: patch.description,
+      status: patch.status,
+      scheduledDate: patch.scheduledDate,
+      startTime: patch.startTime,
+      endTime: patch.endTime,
+      location: patch.location,
+      icon: patch.icon,
+      listId: patch.listId,
+      tagIds: patch.tagIds,
+    },
+  }));
 }
 
 export async function trashActivity(id: string): Promise<void> {
-  await simulateLatency();
-  const nowIso = new Date().toISOString();
-  activitiesStore = activitiesStore.map((item) =>
-    item.id === id
-      ? { ...item, deletedAt: nowIso, updatedAt: nowIso }
-      : item,
-  );
+  await getHttpClient().POST("/v1/activities/{id}/trash", {
+    params: { path: { id } },
+  });
 }
 
 export async function restoreActivity(id: string): Promise<Activity> {
-  await simulateLatency();
-  const existing = activitiesStore.find((item) => item.id === id);
-  if (!existing) {
-    throw new Error(`Activity ${id} not found`);
-  }
-  const nowIso = new Date().toISOString();
-  const restored: Activity = {
-    ...existing,
-    deletedAt: null,
-    updatedAt: nowIso,
-  };
-  activitiesStore = activitiesStore.map((item) =>
-    item.id === id ? restored : item,
-  );
-  return cloneActivity(restored);
+  return apiData(await getHttpClient().POST("/v1/activities/{id}/restore", {
+    params: { path: { id } },
+  }));
 }
 
 export async function deleteActivityForever(id: string): Promise<void> {
-  await simulateLatency();
-  activitiesStore = activitiesStore.filter((item) => item.id !== id);
+  await getHttpClient().DELETE("/v1/activities/{id}", {
+    params: { path: { id } },
+  });
 }

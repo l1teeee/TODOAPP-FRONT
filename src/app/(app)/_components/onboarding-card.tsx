@@ -3,6 +3,7 @@
 import { Loader2 } from "lucide-react";
 import { useRef } from "react";
 import { useEntrance } from "@/shared/motion/use-entrance";
+import { useEnabledModules } from "@/shared/api/use-enabled-modules";
 import { Button } from "@/shared/ui/button";
 import { dismissOnboarding, useLoadSampleData } from "./sample-data";
 
@@ -15,6 +16,10 @@ export function OnboardingCard({
   firstName,
   onStartFromScratch,
 }: OnboardingCardProps) {
+  const { data: modules } = useEnabledModules();
+  const canLoadSamples = ["lists", "tags", "subtasks"].every((module) =>
+    modules?.includes(module),
+  );
   const { load, isLoading } = useLoadSampleData();
   const cardRef = useRef<HTMLElement>(null);
   useEntrance(cardRef, true);
@@ -37,12 +42,14 @@ export function OnboardingCard({
         Start from scratch or load sample data to explore.
       </p>
       <div className="mt-4 flex flex-wrap gap-3">
-        <Button variant="berry" disabled={isLoading} onClick={() => void load()}>
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-          ) : null}
-          <span>Load sample data</span>
-        </Button>
+        {canLoadSamples ? (
+          <Button variant="berry" disabled={isLoading} onClick={() => void load()}>
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            ) : null}
+            <span>Load sample data</span>
+          </Button>
+        ) : null}
         <Button
           variant="secondary"
           disabled={isLoading}

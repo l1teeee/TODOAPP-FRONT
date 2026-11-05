@@ -229,8 +229,7 @@ const SAMPLE_ACTIVITIES: readonly SampleActivity[] = [
 ];
 
 /**
- * Loads the sample workspace through the feature hooks only, so it keeps
- * working unchanged once the demo APIs are replaced by the real API.
+ * Loads the sample workspace through the feature hooks.
  */
 export function useLoadSampleData() {
   const { data: existingLists } = useLists();

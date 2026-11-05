@@ -17,6 +17,7 @@ import { UserMenu } from "@/features/profile/components/user-menu";
 import { SubtaskChecklist } from "@/features/subtasks/components/subtask-checklist";
 import { useTags } from "@/features/tags/api/use-tags";
 import { TagChip } from "@/features/tags/components/tag-chip";
+import { useEnabledModules } from "@/shared/api/use-enabled-modules";
 import { gsap, markWillChange, NO_REDUCED_MOTION, useGSAP } from "@/shared/motion/gsap";
 import { DURATION, EASE } from "@/shared/motion/motion-tokens";
 import { useShellEntrance } from "@/shared/motion/use-entrance";
@@ -54,6 +55,7 @@ function DetailSkeleton() {
 }
 
 function DetailBody({ activity }: { activity: Activity | null }) {
+  const { data: modules } = useEnabledModules();
   const bodyRef = useRef<HTMLDivElement>(null);
   const activityId = activity?.id ?? null;
 
@@ -111,16 +113,20 @@ function DetailBody({ activity }: { activity: Activity | null }) {
         <ActivityDetailCard
           activity={activity}
           listSection={
-            matchedList ? <ListLabel list={matchedList} /> : undefined
+            modules?.includes("lists") && matchedList
+              ? <ListLabel list={matchedList} />
+              : undefined
           }
           tagsSection={
-            matchedTags.length > 0
+            modules?.includes("tags") && matchedTags.length > 0
               ? matchedTags.map((tag) => <TagChip key={tag.id} tag={tag} />)
               : undefined
           }
         />
 
-        <SubtaskChecklist activityId={activity.id} />
+        {modules?.includes("subtasks") ? (
+          <SubtaskChecklist activityId={activity.id} />
+        ) : null}
       </div>
 
       <Button

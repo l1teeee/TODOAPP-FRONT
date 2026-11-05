@@ -17,3 +17,8 @@ Before writing Next.js code, read the relevant guide in `node_modules/next/dist/
 ## Commands
 - `npm run dev` (port 3000)
 - `npm run check` (lint, typecheck, build)
+
+## Security and quality
+- Dependabot (`.github/dependabot.yml`) opens weekly npm update PRs and security fix PRs. Merge one only after the review below and `npm run check` pass.
+- Review agents: `.claude/agents/security-reviewer.md` and `.claude/agents/quality-reviewer.md`. Run both on every diff before merge; a `VERDICT: BLOCK` stops the merge.
+

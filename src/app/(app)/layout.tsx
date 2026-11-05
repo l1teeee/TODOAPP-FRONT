@@ -1,7 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Suspense, useRef, type ReactNode } from "react";
+import { Suspense, useEffect, useRef, type ReactNode } from "react";
+import { useProfile, useUpdateProfile } from "@/features/profile/api/use-profile";
 import {
   gsap,
   markWillChange,
@@ -39,6 +40,24 @@ function DetailFallback() {
 }
 
 const SIDEBAR_WIDTH = 220;
+
+function ProfileTimezoneSync() {
+  const { data: profile } = useProfile();
+  const { mutate: updateProfile, error } = useUpdateProfile();
+  const syncedProfileId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!profile || syncedProfileId.current === profile.id) return;
+    syncedProfileId.current = profile.id;
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (timezone !== profile.timezone) {
+      updateProfile({ timezone });
+    }
+  }, [profile, updateProfile]);
+
+  if (error) throw error;
+  return null;
+}
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
@@ -190,6 +209,7 @@ function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex h-dvh w-full flex-col overflow-hidden bg-canvas lg:grid lg:grid-cols-[72px_auto_minmax(0,1fr)] xl:grid-cols-[72px_auto_minmax(0,1fr)_320px]">
+      <ProfileTimezoneSync />
       <Suspense fallback={<div className="h-14 border-b border-line bg-surface lg:hidden" />}>
         <MobileNav />
       </Suspense>

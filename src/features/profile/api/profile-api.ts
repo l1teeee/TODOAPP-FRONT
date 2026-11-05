@@ -7,19 +7,8 @@ export interface ProfilePatch {
   emailNotifications?: boolean;
 }
 
-const syncedUsers = new Set<string>();
-
 export async function fetchProfile(): Promise<Profile> {
-  const profile = apiData(await getHttpClient().GET("/v1/me"));
-  if (!syncedUsers.has(profile.id)) {
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const updated = timezone !== profile.timezone
-      ? await updateProfile({ timezone })
-      : profile;
-    syncedUsers.add(profile.id);
-    return updated;
-  }
-  return profile;
+  return apiData(await getHttpClient().GET("/v1/me"));
 }
 
 export async function updateProfile(patch: ProfilePatch): Promise<Profile> {

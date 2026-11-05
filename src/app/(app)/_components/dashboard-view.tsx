@@ -23,6 +23,7 @@ import { useProfile } from "@/features/profile/api/use-profile";
 import { useTags } from "@/features/tags/api/use-tags";
 import { TagChip } from "@/features/tags/components/tag-chip";
 import { TagPicker } from "@/features/tags/components/tag-picker";
+import { useEnabledModules } from "@/shared/api/use-enabled-modules";
 import { Field } from "@/shared/ui/field";
 import { IconButton } from "@/shared/ui/icon-button";
 import { DashboardHeader } from "./dashboard-header";
@@ -50,6 +51,7 @@ export interface DashboardViewProps {
 }
 
 export function DashboardView({ view }: DashboardViewProps) {
+  const { data: modules } = useEnabledModules();
   const { q, list, tag, activity: selectedParam, setParam } =
     useDashboardParams();
 
@@ -142,10 +144,12 @@ export function DashboardView({ view }: DashboardViewProps) {
 
     return (
       <>
-        {matchedTags.map((t) => (
-          <TagChip key={t.id} tag={t} />
-        ))}
-        {matchedList ? <ListLabel list={matchedList} /> : null}
+        {modules?.includes("tags")
+          ? matchedTags.map((t) => <TagChip key={t.id} tag={t} />)
+          : null}
+        {modules?.includes("lists") && matchedList ? (
+          <ListLabel list={matchedList} />
+        ) : null}
       </>
     );
   };
@@ -230,22 +234,26 @@ export function DashboardView({ view }: DashboardViewProps) {
         defaultStatus={defaultStatus}
         extraFields={(values, setValues) => (
           <div className="space-y-4">
-            <Field label="List">
-              <ListSelect
-                value={values.listId}
-                onChange={(listId) =>
-                  setValues((prev) => ({ ...prev, listId }))
-                }
-              />
-            </Field>
-            <Field label="Tags">
-              <TagPicker
-                selectedIds={values.tagIds}
-                onChange={(tagIds) =>
-                  setValues((prev) => ({ ...prev, tagIds }))
-                }
-              />
-            </Field>
+            {modules?.includes("lists") ? (
+              <Field label="List">
+                <ListSelect
+                  value={values.listId}
+                  onChange={(listId) =>
+                    setValues((prev) => ({ ...prev, listId }))
+                  }
+                />
+              </Field>
+            ) : null}
+            {modules?.includes("tags") ? (
+              <Field label="Tags">
+                <TagPicker
+                  selectedIds={values.tagIds}
+                  onChange={(tagIds) =>
+                    setValues((prev) => ({ ...prev, tagIds }))
+                  }
+                />
+              </Field>
+            ) : null}
           </div>
         )}
       />

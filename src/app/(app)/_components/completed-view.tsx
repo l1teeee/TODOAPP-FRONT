@@ -13,6 +13,7 @@ import { useLists } from "@/features/lists/api/use-lists";
 import { ListLabel } from "@/features/lists/components/list-label";
 import { useTags } from "@/features/tags/api/use-tags";
 import { TagChip } from "@/features/tags/components/tag-chip";
+import { useEnabledModules } from "@/shared/api/use-enabled-modules";
 import { useEntrance } from "@/shared/motion/use-entrance";
 import { addDaysFormatted, formatLocalDate } from "@/shared/lib/dates";
 import { Button } from "@/shared/ui/button";
@@ -45,7 +46,10 @@ function formatCompletionTime(isoString: string | null): string {
 }
 
 export function CompletedView() {
-  const { data: activities, isLoading } = useCompletedActivities();
+  const { data: modules } = useEnabledModules();
+  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useCompletedActivities();
+  const activities = data?.pages.flatMap((page) => page.items);
   const { data: lists } = useLists();
   const { data: tags } = useTags();
   const updateMutation = useUpdateActivity();
@@ -62,10 +66,12 @@ export function CompletedView() {
 
     return (
       <>
-        {matchedTags.map((t) => (
-          <TagChip key={t.id} tag={t} />
-        ))}
-        {matchedList ? <ListLabel list={matchedList} /> : null}
+        {modules?.includes("tags")
+          ? matchedTags.map((t) => <TagChip key={t.id} tag={t} />)
+          : null}
+        {modules?.includes("lists") && matchedList ? (
+          <ListLabel list={matchedList} />
+        ) : null}
       </>
     );
   };
@@ -153,6 +159,15 @@ export function CompletedView() {
           ))}
         </div>
       )}
+      {hasNextPage ? (
+        <Button
+          variant="secondary"
+          disabled={isFetchingNextPage}
+          onClick={() => void fetchNextPage()}
+        >
+          Load more
+        </Button>
+      ) : null}
     </div>
   );
 }

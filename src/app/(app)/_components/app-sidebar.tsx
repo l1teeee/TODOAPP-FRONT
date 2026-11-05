@@ -15,6 +15,7 @@ import { usePathname } from "next/navigation";
 import { useRef } from "react";
 import { ListNav } from "@/features/lists/components/list-nav";
 import { TagNav } from "@/features/tags/components/tag-nav";
+import { useEnabledModules } from "@/shared/api/use-enabled-modules";
 import { cn } from "@/shared/lib/cn";
 import {
   useActiveIndicator,
@@ -43,6 +44,7 @@ export interface AppSidebarProps {
 }
 
 export function AppSidebar({ onNavigate, className }: AppSidebarProps) {
+  const { data: modules } = useEnabledModules();
   const pathname = usePathname();
   const { list, tag } = useDashboardParams();
   const navRef = useRef<HTMLElement>(null);
@@ -94,13 +96,18 @@ export function AppSidebar({ onNavigate, className }: AppSidebarProps) {
           })}
         </ul>
 
-        <ListNav activeListId={list} onNavigate={onNavigate} />
+        {modules?.includes("lists") ? (
+          <ListNav activeListId={list} onNavigate={onNavigate} />
+        ) : null}
 
-        <TagNav activeTagId={tag} onNavigate={onNavigate} />
+        {modules?.includes("tags") ? (
+          <TagNav activeTagId={tag} onNavigate={onNavigate} />
+        ) : null}
       </div>
 
       <ul className="mt-6 space-y-0.5 pt-4 border-t border-line mr-3">
         {FOOTER_LINKS.map((item) => {
+          if (item.href === "/summary" && !modules?.includes("summary")) return null;
           const Icon = item.icon;
           const isActive = pathname === item.href;
           return (

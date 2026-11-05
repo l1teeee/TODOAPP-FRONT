@@ -4,9 +4,15 @@ import { Bell, CheckSquare, Sparkles } from "lucide-react";
 import { useSummary } from "@/features/summary/api/use-summary";
 import { StatusBars } from "@/features/summary/components/status-bars";
 import { SummaryStats } from "@/features/summary/components/summary-stats";
+import { useEnabledModules } from "@/shared/api/use-enabled-modules";
 import { Skeleton } from "@/shared/ui/skeleton";
 
 export function SummaryView() {
+  const { data: modules } = useEnabledModules();
+  return modules?.includes("summary") ? <EnabledSummary /> : null;
+}
+
+function EnabledSummary() {
   const { data: summary, isLoading } = useSummary();
 
   return (

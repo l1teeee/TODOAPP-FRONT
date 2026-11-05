@@ -13,6 +13,7 @@ import { useLists } from "@/features/lists/api/use-lists";
 import { ListLabel } from "@/features/lists/components/list-label";
 import { useTags } from "@/features/tags/api/use-tags";
 import { TagChip } from "@/features/tags/components/tag-chip";
+import { useEnabledModules } from "@/shared/api/use-enabled-modules";
 import { useEntrance } from "@/shared/motion/use-entrance";
 import { Button } from "@/shared/ui/button";
 import { Dialog } from "@/shared/ui/dialog";
@@ -29,7 +30,10 @@ function formatDeletedDate(isoString: string | null): string {
 }
 
 export function TrashView() {
-  const { data: activities, isLoading } = useTrashedActivities();
+  const { data: modules } = useEnabledModules();
+  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useTrashedActivities();
+  const activities = data?.pages.flatMap((page) => page.items);
   const { data: lists } = useLists();
   const { data: tags } = useTags();
   const restoreMutation = useRestoreActivity();
@@ -51,10 +55,12 @@ export function TrashView() {
 
     return (
       <>
-        {matchedTags.map((t) => (
-          <TagChip key={t.id} tag={t} />
-        ))}
-        {matchedList ? <ListLabel list={matchedList} /> : null}
+        {modules?.includes("tags")
+          ? matchedTags.map((t) => <TagChip key={t.id} tag={t} />)
+          : null}
+        {modules?.includes("lists") && matchedList ? (
+          <ListLabel list={matchedList} />
+        ) : null}
       </>
     );
   };
@@ -113,6 +119,16 @@ export function TrashView() {
           ))}
         </div>
       )}
+
+      {hasNextPage ? (
+        <Button
+          variant="secondary"
+          disabled={isFetchingNextPage}
+          onClick={() => void fetchNextPage()}
+        >
+          Load more
+        </Button>
+      ) : null}
 
       <Dialog
         open={confirmingActivity !== null}

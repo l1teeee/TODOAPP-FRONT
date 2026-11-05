@@ -10,6 +10,7 @@ import {
 } from "@/shared/motion/gsap";
 import { DURATION, EASE } from "@/shared/motion/motion-tokens";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { RequireSession } from "@/shared/auth/auth-guard";
 import { AppRail } from "./_components/app-rail";
 import { AppSidebar } from "./_components/app-sidebar";
 import { DetailPanel } from "./_components/detail-panel";
@@ -40,6 +41,26 @@ function DetailFallback() {
 const SIDEBAR_WIDTH = 220;
 
 export default function AppLayout({ children }: { children: ReactNode }) {
+  return (
+    <RequireSession
+      fallback={
+        <div className="flex h-dvh w-full bg-canvas" aria-busy="true">
+          <SidebarFallback />
+          <div className="flex-1 space-y-4 p-6">
+            <Skeleton className="h-8 w-1/3" />
+            <Skeleton className="h-44 w-full rounded-card" />
+            <Skeleton className="h-32 w-full rounded-card" />
+          </div>
+          <DetailFallback />
+        </div>
+      }
+    >
+      <AppShell>{children}</AppShell>
+    </RequireSession>
+  );
+}
+
+function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { state, hydrated } = useSidebarState();
   const sidebarWrapRef = useRef<HTMLDivElement>(null);

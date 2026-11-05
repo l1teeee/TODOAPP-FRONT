@@ -1,12 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { simulateLatency } from "@/shared/lib/simulate-latency";
+import { apiData, getHttpClient } from "./http-client";
 
-// Temporary demo; replaced by GET /v1/meta in the API integration brief
 async function fetchEnabledModules(): Promise<string[]> {
-  await simulateLatency(100);
-  return ["activities", "lists", "tags", "subtasks", "auth-gateway"];
+  const data = apiData(await getHttpClient().GET("/v1/meta"));
+  return data.modules;
 }
 
 export const enabledModulesKey = ["meta", "modules"] as const;
@@ -15,6 +14,6 @@ export function useEnabledModules() {
   return useQuery({
     queryKey: enabledModulesKey,
     queryFn: fetchEnabledModules,
-    staleTime: Infinity,
+    staleTime: 5 * 60 * 1000,
   });
 }

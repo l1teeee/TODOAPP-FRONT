@@ -1,0 +1,30 @@
+import { test, expect } from "@playwright/test";
+import { ensureSampleData } from "./fixtures";
+
+test.use({ storageState: "e2e/.auth/user.json" });
+test("creates a list and tag and filters activities by list", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Desktop only");
+  const suffix = `${testInfo.project.name}-${Date.now().toString(36)}`;
+  const listName = `E2E List ${suffix}`;
+  const tagName = `e2e-${suffix}`;
+  const taskName = `Listed E2E task ${suffix}`;
+  await ensureSampleData(page);
+  await page.getByRole("button", { name: "New list" }).first().click();
+  const list = page.getByRole("dialog", { name: "New list" });
+  await list.getByLabel("Name").fill(listName);
+  await list.getByRole("button", { name: "Create list" }).click();
+  await expect(page.getByRole("link", { name: listName })).toBeVisible();
+  await page.getByRole("button", { name: "New tag" }).first().click();
+  const tag = page.getByRole("dialog", { name: "New tag" });
+  await tag.getByLabel("Name").fill(tagName);
+  await tag.getByRole("button", { name: "Create tag" }).click();
+  await expect(page.getByRole("link", { name: tagName })).toBeVisible();
+  await page.getByRole("button", { name: "New Activity" }).click();
+  const activity = page.getByRole("dialog", { name: "New activity" });
+  await activity.getByLabel("Title").fill(taskName);
+  await activity.getByLabel("List").selectOption({ label: listName });
+  await activity.getByRole("button", { name: "Create activity" }).click();
+  await page.getByRole("link", { name: listName }).click();
+  await expect(page.getByRole("button", { name: taskName })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Gym Session Week 3/ })).toHaveCount(0);
+});

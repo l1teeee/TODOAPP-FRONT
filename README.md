@@ -66,6 +66,13 @@ Next.js 16 static client app deployed on Vercel with no serverless code. It comm
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL (Project Settings > API) |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Yes | Supabase publishable (anon) key. Public by design; never put the service role key here |
 
+## Testing
+Run unit and component tests with `npm test` or `npm run test:agent`.
+
+For end-to-end tests, copy `.env.e2e.example` to `.env.e2e.local` and fill in the Supabase URL, secret key, publishable key and test user password. Set the dedicated test email if needed (the default is `e2e@example.com`). The setup deletes and recreates that user on every run, and disables email notifications. Keep this file private. The optional API and frontend URLs default to `http://localhost:4000` and `http://localhost:3000`.
+
+Start the API on port 4000 and the frontend dev server on port 3000 before testing. Install the browser once with `npx playwright install chromium`, then run `npm run test:e2e`.
+
 ## Deploy on Vercel
 1. Import repository `https://github.com/l1teeee/TODOAPP-FRONT` into Vercel.
 2. Select framework preset `Next.js`.

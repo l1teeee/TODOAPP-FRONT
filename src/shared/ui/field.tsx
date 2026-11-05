@@ -33,7 +33,9 @@ export function Field({
   const errorId = error ? `${controlId}-error` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
 
-  const enhancedChild = !group && isValidElement<{
+  // A plain div child is a layout wrapper: the control inside it owns the id.
+  const isWrapperDiv = isValidElement(children) && children.type === "div";
+  const enhancedChild = !group && !isWrapperDiv && isValidElement<{
     id?: string;
     "aria-describedby"?: string;
     invalid?: boolean;

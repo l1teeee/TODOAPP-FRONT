@@ -38,7 +38,7 @@ export function UserMenu({ onSignOut, compact = false }: UserMenuProps) {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          aria-label={compact ? "Account menu" : undefined}
+          aria-label="Account menu"
           className={compact ? "inline-flex rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer" : "inline-flex items-center gap-2.5 rounded-full py-1 pl-1 pr-2 text-xs font-semibold text-fg transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer"}
         >
           <Avatar name={displayName} className={compact ? "h-9! w-9!" : undefined} />

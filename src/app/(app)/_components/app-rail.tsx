@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useRef } from "react";
+import { Fragment, useRef } from "react";
 import { ReminderBell } from "@/features/activities/components/reminder-bell";
 import { useSignOut } from "@/features/auth/api/use-auth";
 import { cn } from "@/shared/lib/cn";
@@ -18,6 +18,7 @@ import {
   useActiveIndicator,
   useShellEntrance,
 } from "@/shared/motion/use-entrance";
+import { SidebarToggle } from "./sidebar-toggle";
 
 const TOP_ITEMS = [
   { href: "/today", label: "Today", icon: Home },
@@ -64,26 +65,28 @@ export function AppRail({ onNavigate, className }: AppRailProps) {
       )}
     >
       <div className="flex flex-col items-center gap-3">
-        {TOP_ITEMS.map((item) => {
+        {TOP_ITEMS.map((item, index) => {
           const Icon = item.icon;
           const active = pathname === item.href;
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onNavigate}
-              aria-label={item.label}
-              title={item.label}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "icon-anim relative isolate inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-                active
-                  ? "text-accent"
-                  : "text-fg-secondary hover:bg-surface-muted hover:text-fg",
-              )}
-            >
-              <Icon className="h-5 w-5" aria-hidden="true" />
-            </Link>
+            <Fragment key={item.href}>
+              <Link
+                href={item.href}
+                onClick={onNavigate}
+                aria-label={item.label}
+                title={item.label}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "icon-anim relative isolate inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                  active
+                    ? "text-accent"
+                    : "text-fg-secondary hover:bg-surface-muted hover:text-fg",
+                )}
+              >
+                <Icon className="h-5 w-5" aria-hidden="true" />
+              </Link>
+              {index === 0 ? <SidebarToggle /> : null}
+            </Fragment>
           );
         })}
       </div>

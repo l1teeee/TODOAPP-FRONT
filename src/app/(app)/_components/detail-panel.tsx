@@ -25,6 +25,7 @@ import { Button } from "@/shared/ui/button";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { Sheet } from "@/shared/ui/sheet";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { DetailPanelToggle } from "./detail-panel-toggle";
 import { useDashboardParams } from "./use-dashboard-params";
 
 function resolveViewFromPathname(pathname: string): ActivityView {
@@ -188,7 +189,10 @@ export function DetailPanel() {
         className="hidden xl:flex xl:h-full xl:w-[320px] xl:shrink-0 xl:flex-col xl:border-l xl:border-line xl:bg-surface xl:p-5 xl:overflow-y-auto"
       >
         <div className="mb-6 flex items-center justify-between gap-2">
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <DetailPanelToggle />
+            <ThemeToggle />
+          </div>
           <UserMenu onSignOut={handleSignOut} />
         </div>
 

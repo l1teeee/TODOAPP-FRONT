@@ -27,17 +27,17 @@ function subscribePreference(onStoreChange: () => void): () => void {
 
 function getPreferenceSnapshot(): ThemePreference {
   if (typeof window === "undefined") {
-    return "system";
+    return "light";
   }
   const stored = window.localStorage.getItem(STORAGE_KEY);
   if (stored === "light" || stored === "dark" || stored === "system") {
     return stored;
   }
-  return "system";
+  return "light";
 }
 
 function getServerPreferenceSnapshot(): ThemePreference {
-  return "system";
+  return "light";
 }
 
 function subscribeSystemDark(onStoreChange: () => void): () => void {
@@ -83,12 +83,8 @@ export function useTheme(): {
     preference === "system" ? (systemIsDark ? "dark" : "light") : preference;
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (preference === "system") {
-      delete root.dataset.theme;
-    } else {
-      root.dataset.theme = preference;
-    }
+    document.documentElement.dataset.theme = preference;
+    document.getElementById("theme-boot")?.remove();
   }, [preference]);
 
   const setPreference = useCallback((next: ThemePreference) => {

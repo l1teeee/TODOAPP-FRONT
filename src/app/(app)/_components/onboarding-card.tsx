@@ -1,6 +1,8 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { useRef } from "react";
+import { useEntrance } from "@/shared/motion/use-entrance";
 import { Button } from "@/shared/ui/button";
 import { dismissOnboarding, useLoadSampleData } from "./sample-data";
 
@@ -14,6 +16,8 @@ export function OnboardingCard({
   onStartFromScratch,
 }: OnboardingCardProps) {
   const { load, isLoading } = useLoadSampleData();
+  const cardRef = useRef<HTMLElement>(null);
+  useEntrance(cardRef, true);
 
   const handleStartFromScratch = () => {
     dismissOnboarding();
@@ -22,6 +26,7 @@ export function OnboardingCard({
 
   return (
     <section
+      ref={cardRef}
       aria-labelledby="onboarding-heading"
       className="rounded-card border border-line bg-surface p-6"
     >

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Suspense, useRef, type ReactNode } from "react";
+import { Suspense, useRef, type ReactNode, type RefObject } from "react";
 import {
   gsap,
   markWillChange,
@@ -14,6 +14,7 @@ import { AppRail } from "./_components/app-rail";
 import { AppSidebar } from "./_components/app-sidebar";
 import { DetailPanel } from "./_components/detail-panel";
 import { MobileNav } from "./_components/mobile-nav";
+import { useDetailPanelState } from "./_components/use-detail-panel-state";
 import { useSidebarState } from "./_components/use-sidebar-state";
 
 function SidebarFallback() {
@@ -37,68 +38,47 @@ function DetailFallback() {
   );
 }
 
-const SIDEBAR_WIDTH = 220;
+interface CollapsiblePanelOptions {
+  collapsed: boolean;
+  hydrated: boolean;
+  wrapRef: RefObject<HTMLDivElement | null>;
+  panelRef: RefObject<HTMLDivElement | null>;
+  width: number;
+  /** Horizontal offset (px) the inner panel travels while collapsing. */
+  offset: number;
+  /** Descendants that stagger in when the panel expands. */
+  itemSelector?: string;
+}
 
-export default function AppLayout({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
-  const { state, hydrated } = useSidebarState();
-  const sidebarWrapRef = useRef<HTMLDivElement>(null);
-  const sidebarPanelRef = useRef<HTMLDivElement>(null);
-  const viewRef = useRef<HTMLDivElement>(null);
-  const previousSidebarState = useRef<string | null>(null);
-
-  useGSAP(
-    () => {
-      const view = viewRef.current;
-      if (!view) return;
-
-      const mm = gsap.matchMedia();
-      mm.add(NO_REDUCED_MOTION, () => {
-        gsap.fromTo(
-          view,
-          { autoAlpha: 0, y: 10 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: DURATION.slow,
-            ease: EASE.out,
-            overwrite: "auto",
-            onStart: markWillChange,
-            clearProps: "all",
-          },
-        );
-        view.dataset.motion = "done";
-        gsap.from(view.firstElementChild?.children ?? [], {
-          autoAlpha: 0,
-          y: 10,
-          duration: DURATION.base,
-          ease: EASE.out,
-          stagger: 0.03,
-          overwrite: "auto",
-          clearProps: "all",
-        });
-      });
-      return () => mm.revert();
-    },
-    { scope: viewRef, dependencies: [pathname] },
-  );
+// Tweens the wrapper width (the only layout tween) and the inner panel's
+// transform and opacity. The stored state is applied without animation on
+// the first run after hydration.
+function useCollapsiblePanel({
+  collapsed,
+  hydrated,
+  wrapRef,
+  panelRef,
+  width,
+  offset,
+  itemSelector,
+}: CollapsiblePanelOptions): void {
+  const previousCollapsed = useRef<boolean | null>(null);
 
   useGSAP(
     () => {
-      const wrap = sidebarWrapRef.current;
-      const panel = sidebarPanelRef.current;
+      const wrap = wrapRef.current;
+      const panel = panelRef.current;
       if (!hydrated || !wrap || !panel) return;
 
-      const collapsed = state === "collapsed";
       const changed =
-        previousSidebarState.current !== null &&
-        previousSidebarState.current !== state;
-      previousSidebarState.current = state;
+        previousCollapsed.current !== null &&
+        previousCollapsed.current !== collapsed;
+      previousCollapsed.current = collapsed;
 
       const applyFinalState = () => {
         if (collapsed) {
           gsap.set(wrap, { width: 0 });
-          gsap.set(panel, { autoAlpha: 0, x: -24 });
+          gsap.set(panel, { autoAlpha: 0, x: offset });
         } else {
           gsap.set(wrap, { clearProps: "width" });
           gsap.set(panel, { clearProps: "all" });
@@ -120,7 +100,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           });
           gsap.to(panel, {
             autoAlpha: 0,
-            x: -24,
+            x: offset,
             duration: 0.2,
             ease: EASE.out,
             overwrite: "auto",
@@ -131,7 +111,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           wrap,
           { width: 0 },
           {
-            width: SIDEBAR_WIDTH,
+            width,
             duration: 0.45,
             ease: EASE.inOut,
             overwrite: "auto",
@@ -140,7 +120,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         );
         gsap.fromTo(
           panel,
-          { autoAlpha: 0, x: -24 },
+          { autoAlpha: 0, x: offset },
           {
             autoAlpha: 1,
             x: 0,
@@ -151,24 +131,85 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             clearProps: "all",
           },
         );
-        gsap.from(panel.querySelectorAll("li"), {
-          autoAlpha: 0,
-          y: 6,
-          duration: DURATION.base,
-          stagger: 0.03,
-          delay: 0.25,
-          ease: EASE.out,
-          overwrite: "auto",
-          clearProps: "all",
-        });
+        if (itemSelector) {
+          gsap.from(panel.querySelectorAll(itemSelector), {
+            autoAlpha: 0,
+            y: 6,
+            duration: DURATION.base,
+            stagger: 0.03,
+            delay: 0.25,
+            ease: EASE.out,
+            overwrite: "auto",
+            clearProps: "all",
+          });
+        }
       });
       mm.add("(prefers-reduced-motion: reduce)", applyFinalState);
     },
-    { dependencies: [state, hydrated] },
+    { dependencies: [collapsed, hydrated] },
+  );
+}
+
+export default function AppLayout({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const sidebar = useSidebarState();
+  const detailPanel = useDetailPanelState();
+  const sidebarWrapRef = useRef<HTMLDivElement>(null);
+  const sidebarPanelRef = useRef<HTMLDivElement>(null);
+  const detailWrapRef = useRef<HTMLDivElement>(null);
+  const detailPanelRef = useRef<HTMLDivElement>(null);
+  const viewRef = useRef<HTMLDivElement>(null);
+
+  // Animates only the wrapper this layout renders; the page content inside
+  // Suspense hydrates later and must not be touched from here.
+  useGSAP(
+    () => {
+      const view = viewRef.current;
+      if (!view) return;
+
+      const mm = gsap.matchMedia();
+      mm.add(NO_REDUCED_MOTION, () => {
+        gsap.fromTo(
+          view,
+          { autoAlpha: 0, y: 10 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: DURATION.slow,
+            ease: EASE.out,
+            overwrite: "auto",
+            onStart: markWillChange,
+            clearProps: "all",
+          },
+        );
+        view.dataset.motion = "done";
+      });
+      return () => mm.revert();
+    },
+    { scope: viewRef, dependencies: [pathname] },
   );
 
+  useCollapsiblePanel({
+    collapsed: sidebar.state === "collapsed",
+    hydrated: sidebar.hydrated,
+    wrapRef: sidebarWrapRef,
+    panelRef: sidebarPanelRef,
+    width: 220,
+    offset: -24,
+    itemSelector: "li",
+  });
+
+  useCollapsiblePanel({
+    collapsed: detailPanel.state === "closed",
+    hydrated: detailPanel.hydrated,
+    wrapRef: detailWrapRef,
+    panelRef: detailPanelRef,
+    width: 320,
+    offset: 24,
+  });
+
   return (
-    <div className="flex h-dvh w-full flex-col overflow-hidden bg-canvas lg:grid lg:grid-cols-[72px_auto_minmax(0,1fr)] xl:grid-cols-[72px_auto_minmax(0,1fr)_320px]">
+    <div className="flex h-dvh w-full flex-col overflow-hidden bg-canvas lg:grid lg:grid-cols-[72px_auto_minmax(0,1fr)] xl:grid-cols-[72px_auto_minmax(0,1fr)_auto]">
       <Suspense fallback={<div className="h-14 border-b border-line bg-surface lg:hidden" />}>
         <MobileNav />
       </Suspense>
@@ -199,9 +240,16 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         </div>
       </main>
 
-      <Suspense fallback={<DetailFallback />}>
-        <DetailPanel />
-      </Suspense>
+      <div
+        ref={detailWrapRef}
+        className="xl:h-full xl:w-[320px] xl:overflow-hidden"
+      >
+        <div ref={detailPanelRef} className="xl:h-full xl:w-[320px]">
+          <Suspense fallback={<DetailFallback />}>
+            <DetailPanel />
+          </Suspense>
+        </div>
+      </div>
     </div>
   );
 }

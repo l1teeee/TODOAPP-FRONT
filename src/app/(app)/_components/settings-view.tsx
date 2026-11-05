@@ -2,9 +2,11 @@
 
 import { Loader2, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 import { useSignOut } from "@/features/auth/api/use-auth";
 import { useProfile } from "@/features/profile/api/use-profile";
 import { ProfileForm } from "@/features/profile/components/profile-form";
+import { useEntrance } from "@/shared/motion/use-entrance";
 import { useTheme, type ThemePreference } from "@/shared/theme/use-theme";
 import { Button } from "@/shared/ui/button";
 import { SegmentedControl } from "@/shared/ui/segmented-control";
@@ -23,6 +25,8 @@ export function SettingsView() {
   const { preference, setPreference } = useTheme();
   const signOutMutation = useSignOut();
   const sampleData = useLoadSampleData();
+  const pageRef = useRef<HTMLDivElement>(null);
+  useEntrance(pageRef, true);
 
   const handleSignOut = () => {
     signOutMutation.mutate(undefined, {
@@ -33,7 +37,7 @@ export function SettingsView() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 p-4 sm:p-6">
+    <div ref={pageRef} className="mx-auto max-w-3xl space-y-6 p-4 sm:p-6">
       <header>
         <h1 className="text-2xl font-bold tracking-tight text-fg">Settings</h1>
         <p className="mt-1 text-xs text-fg-secondary">

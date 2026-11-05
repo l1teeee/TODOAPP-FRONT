@@ -9,6 +9,7 @@ import {
   useGSAP,
 } from "@/shared/motion/gsap";
 import { DURATION, EASE } from "@/shared/motion/motion-tokens";
+import { useEntrance } from "@/shared/motion/use-entrance";
 import { IconButton } from "@/shared/ui/icon-button";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { useDailyBrief } from "../api/use-daily-brief";
@@ -48,6 +49,8 @@ function AssistantSkeleton() {
 
 export function AssistantCard({ input, isLoading, onSelect }: AssistantCardProps) {
   const messageRef = useRef<HTMLParagraphElement>(null);
+  const cardRef = useRef<HTMLElement>(null);
+  useEntrance(cardRef, !isLoading);
   const { brief, isAiEnabled, isRefreshing, refresh } = useDailyBrief(input);
 
   useGSAP(
@@ -81,7 +84,11 @@ export function AssistantCard({ input, isLoading, onSelect }: AssistantCardProps
   const words = brief.message.split(" ");
 
   return (
-    <section aria-label="Assistant" className={CONTAINER_CLASSES}>
+    <section
+      ref={cardRef}
+      aria-label="Assistant"
+      className={CONTAINER_CLASSES}
+    >
       <div className="flex items-start gap-4">
         <div className="relative shrink-0">
           <span

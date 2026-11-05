@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
   --canvas: light-dark(#EEF2F6, #171B34);
   --surface: light-dark(#FFFFFF, #1F2444);
   --surface-muted: light-dark(#F8FAFC, #262C52);
@@ -59,7 +59,8 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root[data-theme="system"] {
+    color-scheme: dark;
     --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
     --shadow-xl: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
   }

@@ -27,6 +27,7 @@ import { Field } from "@/shared/ui/field";
 import { IconButton } from "@/shared/ui/icon-button";
 import { DashboardHeader } from "./dashboard-header";
 import { OnboardingCard } from "./onboarding-card";
+import { useDetailPanelState } from "./use-detail-panel-state";
 import { useOnboardingDismissed } from "./sample-data";
 import { useDashboardParams } from "./use-dashboard-params";
 
@@ -112,7 +113,10 @@ export function DashboardView({ view }: DashboardViewProps) {
     })),
   };
 
+  const { open: openDetailPanel } = useDetailPanelState();
+
   const handleSelect = (id: string) => {
+    openDetailPanel();
     setParam("activity", id);
   };
 

@@ -42,7 +42,7 @@ export default async function globalSetup(config: FullConfig) {
   try {
     const context = await browser.newContext();
     const page = await context.newPage();
-    await page.goto(`${process.env.E2E_BASE_URL || config.projects[0].use.baseURL || "http://localhost:3000"}/login`);
+    await page.goto(`${process.env.E2E_BASE_URL || config.projects[0].use.baseURL || "http://localhost:3000"}/login`, { waitUntil: "networkidle" });
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Password", { exact: true }).fill(password);
     await page.getByRole("button", { name: "Log in" }).click();

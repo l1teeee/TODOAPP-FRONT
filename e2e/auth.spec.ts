@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test("anonymous users are redirected and can sign in and out", async ({ page }) => {
-  await page.goto("/today");
+  await page.goto("/today", { waitUntil: "networkidle" });
   await expect(page).toHaveURL(/\/login/);
   await page.getByLabel("Email").fill(process.env.E2E_USER_EMAIL || "e2e@example.com");
   await page.getByLabel("Password", { exact: true }).fill("Wrongpassword123");

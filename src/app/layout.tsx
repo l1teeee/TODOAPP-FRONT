@@ -9,7 +9,8 @@ const interTight = Inter_Tight({
 });
 
 export const metadata: Metadata = {
-  title: "todo-app-frontend",
+  title: "TODO App",
+  description: "Plan your habits, reminders and tasks.",
 };
 
 export default function RootLayout({

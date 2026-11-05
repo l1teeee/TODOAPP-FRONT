@@ -17,6 +17,7 @@
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@marsidev/react-turnstile": "1.6.3",
+    "@paper-design/shaders-react": "0.0.82",
     "@supabase/supabase-js": "2.119.0",
     "@tanstack/react-query": "5.106.1",
     "clsx": "^2.1.1",

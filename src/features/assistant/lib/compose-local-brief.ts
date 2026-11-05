@@ -2,7 +2,20 @@ import type { DailyBriefInput, DailyBriefItem } from "../model/daily-brief";
 
 const MAX_NEXT_UP = 3;
 
-export function composeGreeting(input: DailyBriefInput): string {
+export interface LocalBrief {
+  greeting: string;
+  firstName: string | null;
+  nextTask: {
+    id: string;
+    title: string;
+    startTime: string;
+    location: string | null;
+  } | null;
+  rest: Array<{ id: string; title: string; startTime: string }>;
+  message: string;
+}
+
+function composeGreeting(input: DailyBriefInput): string {
   const hour = Number(input.localTime.slice(0, 2));
   const salutation =
     hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
@@ -10,7 +23,7 @@ export function composeGreeting(input: DailyBriefInput): string {
 }
 
 /** Pending items starting at or after the current time, earliest first. */
-export function pickNextUp(input: DailyBriefInput): DailyBriefItem[] {
+function pickNextUp(input: DailyBriefInput): DailyBriefItem[] {
   return input.items
     .filter(
       (item) =>
@@ -22,16 +35,39 @@ export function pickNextUp(input: DailyBriefInput): DailyBriefItem[] {
     .slice(0, MAX_NEXT_UP);
 }
 
-export function composeLocalBrief(input: DailyBriefInput): string {
-  const [first, ...rest] = pickNextUp(input);
-  if (!first) {
-    return "You're all caught up for today.";
+export function composeLocalBrief(input: DailyBriefInput): LocalBrief {
+  const greeting = composeGreeting(input);
+  const [first, ...others] = pickNextUp(input);
+  if (!first || first.startTime === null) {
+    return {
+      greeting,
+      firstName: input.firstName,
+      nextTask: null,
+      rest: [],
+      message: "You're all caught up for today.",
+    };
   }
 
-  const place = first.location ? ` at ${first.location}` : "";
-  const sentences = [`Next up: ${first.title} at ${first.startTime}${place}.`];
-  for (const item of rest) {
-    sentences.push(`Then ${item.title} at ${item.startTime}.`);
+  const nextTask = {
+    id: first.id,
+    title: first.title,
+    startTime: first.startTime,
+    location: first.location,
+  };
+  const rest = others.flatMap((item) =>
+    item.startTime === null
+      ? []
+      : [{ id: item.id, title: item.title, startTime: item.startTime }],
+  );
+
+  const place = nextTask.location ? ` at ${nextTask.location}` : "";
+  let message = `Your next task is ${nextTask.title} at ${nextTask.startTime}${place}.`;
+  if (rest.length > 0) {
+    const list = rest
+      .map((item) => `${item.title} at ${item.startTime}`)
+      .join(" and ");
+    message += ` Then ${list}.`;
   }
-  return sentences.join(" ");
+
+  return { greeting, firstName: input.firstName, nextTask, rest, message };
 }

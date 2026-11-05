@@ -274,6 +274,36 @@ html.theme-fading *::after {
   text-shadow: 0 2px 12px color-mix(in srgb, var(--navy) 45%, transparent);
 }
 
+@keyframes caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.assistant-caret {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .assistant-caret {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    background-color: var(--fg);
+  }
+
+  .assistant-caret-done {
+    animation: caret-blink 0.8s step-end 3 forwards;
+  }
+}
+
 @keyframes pop {
   0% {
     scale: 1;

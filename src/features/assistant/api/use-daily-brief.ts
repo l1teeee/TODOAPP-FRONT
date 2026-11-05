@@ -30,7 +30,7 @@ export function useDailyBrief(input: DailyBriefInput) {
       try {
         return { message: await writeDailyBrief(input), source: "ai" };
       } catch {
-        return { message: composeLocalBrief(input), source: "local" };
+        return { message: composeLocalBrief(input).message, source: "local" };
       }
     },
     enabled: aiEnabled,
@@ -40,7 +40,7 @@ export function useDailyBrief(input: DailyBriefInput) {
   const brief: DailyBrief =
     aiEnabled && aiQuery.data
       ? aiQuery.data
-      : { message: composeLocalBrief(input), source: "local" };
+      : { message: composeLocalBrief(input).message, source: "local" };
 
   return {
     brief,

@@ -14,7 +14,7 @@ import type {
   ActivityStatus,
   ActivityView,
 } from "@/features/activities/model/activity";
-import { AssistantCard } from "@/features/assistant/components/assistant-card";
+import { AssistantHero } from "@/features/assistant/components/assistant-hero";
 import type { DailyBriefInput } from "@/features/assistant/model/daily-brief";
 import { useLists } from "@/features/lists/api/use-lists";
 import { ListLabel } from "@/features/lists/components/list-label";
@@ -175,18 +175,16 @@ export function DashboardView({ view }: DashboardViewProps) {
         <DashboardHeader
           view={view}
           onNewActivity={() => handleOpenNew("task", "todo")}
+          hero={(action) => (
+            <AssistantHero
+              input={briefInput}
+              isLoading={isLoading}
+              onSelect={handleSelect}
+              action={action}
+            />
+          )}
         />
       </div>
-
-      {view === "today" ? (
-        <div>
-          <AssistantCard
-            input={briefInput}
-            isLoading={isLoading}
-            onSelect={handleSelect}
-          />
-        </div>
-      ) : null}
 
       {view !== "inbox" ? (
         <div>

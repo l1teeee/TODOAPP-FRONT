@@ -2,7 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { ActivityView } from "@/features/activities/model/activity";
 import { useSignOut } from "@/features/auth/api/use-auth";
 import { useLists } from "@/features/lists/api/use-lists";
@@ -25,9 +25,15 @@ const VIEW_TITLES: Record<ActivityView, string> = {
 export interface DashboardHeaderProps {
   view: ActivityView;
   onNewActivity: () => void;
+  /** Today hero; receives the New Activity button to place inside it. */
+  hero?: (action: ReactNode) => ReactNode;
 }
 
-export function DashboardHeader({ view, onNewActivity }: DashboardHeaderProps) {
+export function DashboardHeader({
+  view,
+  onNewActivity,
+  hero,
+}: DashboardHeaderProps) {
   const { data: modules } = useEnabledModules();
   const router = useRouter();
   const signOutMutation = useSignOut();
@@ -82,9 +88,31 @@ export function DashboardHeader({ view, onNewActivity }: DashboardHeaderProps) {
       ? `#${activeTag.name}`
       : VIEW_TITLES[view];
 
+  const newActivityButton = (
+    <Button
+      variant="berry"
+      className="plus-spin shrink-0 self-start"
+      onClick={onNewActivity}
+    >
+      <Plus className="h-4 w-4" aria-hidden="true" />
+      <span>New Activity</span>
+    </Button>
+  );
+
   return (
     <header className="space-y-5">
-      <div className="hidden lg:flex lg:items-center lg:justify-between lg:gap-4">
+      {view === "today" && !activeList && !activeTag && hero ? (
+        hero(newActivityButton)
+      ) : (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-2xl font-bold tracking-tight text-fg">
+            {heading}
+          </h1>
+          {newActivityButton}
+        </div>
+      )}
+
+      <div className="flex items-center justify-between gap-4">
         <SearchField
           value={localQ}
           onChange={handleSearchChange}
@@ -95,31 +123,6 @@ export function DashboardHeader({ view, onNewActivity }: DashboardHeaderProps) {
           <ThemeToggle />
           <UserMenu onSignOut={handleSignOut} />
         </div>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-fg">
-              {heading}
-            </h1>
-            <p className="mt-1 text-xs text-fg-secondary">
-              Manage your habits, reminders, events and activities.
-            </p>
-          </div>
-        </div>
-        <Button variant="berry" className="plus-spin" onClick={onNewActivity}>
-          <Plus className="h-4 w-4" aria-hidden="true" />
-          <span>New Activity</span>
-        </Button>
-      </div>
-
-      <div className="lg:hidden">
-        <SearchField
-          value={localQ}
-          onChange={handleSearchChange}
-          placeholder="Search"
-        />
       </div>
     </header>
   );

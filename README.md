@@ -3,6 +3,26 @@
 ## Overview
 A Next.js 16 App Router application deployed on Vercel as a static client app with zero serverless code. It connects to the backend API service (hosted on Railway, repository: [TODOOAPP-BACKEND](https://github.com/l1teeee/TODOOAPP-BACKEND)) and authenticates directly from the browser using Supabase, passing the Supabase access token as a Bearer header to backend endpoints.
 
+## Live demo
+
+- App: https://todoapp-front-inky.vercel.app
+- API: https://api-production-d3f3.up.railway.app (`/health`, `/health/ready`)
+- Backend repository: https://github.com/l1teeee/TODOOAPP-BACKEND
+
+How to try it:
+
+1. Open the app and choose **Create one** on the login page. Registration is protected by Cloudflare Turnstile and confirmed with an 8-digit code sent by email (Brevo, sender contact@delta-numen.com).
+2. After verifying you land on **Today**. Use **Load sample data** on the welcome card to fill habits, reminders and the kanban, or create your own with **New Activity**.
+3. Open any card to edit it, add subtasks (with AI suggestions), mark it as done or move it to the trash and restore it. Create lists and tags from the sidebar and filter by them.
+4. You can also sign in with a one-time email code (**Email me a login code**) and reset your password with **Forgot password?**.
+5. The AI assistant on Today (DeepInfra) writes a short brief of your next tasks in your browser's language; without AI it shows a local summary.
+
+Deployment: the Vercel project `todoapp-front` is connected to this repository, and every push to `main` deploys to production. Production variables: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (real widget), `NEXT_PUBLIC_OTP_LENGTH=8` and `NEXT_PUBLIC_SENTRY_DSN`.
+
+Production checks (2026-11-05): Playwright against production passed 10 tests and skipped 5 by design (the registration validation test needs Cloudflare test keys, and some specs are desktop-only or mobile-only); locally 12 passed and 3 skipped. To run the suite against production:
+
+`E2E_BASE_URL=https://todoapp-front-inky.vercel.app E2E_API_URL=https://api-production-d3f3.up.railway.app npm run test:e2e`
+
 ## Features
 - **Dashboard views**: Today, Upcoming, and filterable task views.
 - **Habits**: Daily habit tracker with streak tracking and visual status indicators.

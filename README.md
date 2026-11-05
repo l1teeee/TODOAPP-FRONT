@@ -168,6 +168,14 @@ The frontend client uses typed API contracts generated directly from OpenAPI spe
     npm run test:e2e
     ```
 
+## Observability
+When `NEXT_PUBLIC_SENTRY_DSN` is set for the `todo-app-frontend` project, Sentry reports render errors, unhandled errors, API failures with status 500 or higher, and network failures, associated with the signed-in user id. Traces propagate to the API. Replays record only sessions with an error and mask all text.
+
+- `NEXT_PUBLIC_SENTRY_DSN`: Sentry project DSN; empty disables reporting.
+- `NEXT_PUBLIC_SENTRY_ENVIRONMENT`: Sentry environment; set to `production` on Vercel.
+- `NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE`: trace sampling rate from 0 to 1; defaults to 1.
+- `SENTRY_AUTH_TOKEN`: Sentry organization token, set only in the Vercel environment; enables source map uploads for readable stack traces.
+
 ## Deploy on Vercel
 1. Import the repository into Vercel.
 2. Select framework preset `Next.js`.

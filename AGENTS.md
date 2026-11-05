@@ -11,6 +11,9 @@ Next.js 16 App Router deployed on Vercel as a static client app. No serverless c
 ## Feature independence
 A feature never imports another feature; `src/shared` never imports a feature; pages and layouts in `src/app` connect features through props and slots. Removing a feature means deleting its folder and its usages in `src/app`. The backend `GET /v1/meta` returns the enabled modules; hide the UI of a module the backend does not list.
 
+## Observability
+Only `src/shared/observability` imports `@sentry/*`; `next.config.ts` imports `@sentry/nextjs/config`, and `instrumentation-client.ts` goes through `src/shared/observability`. Nothing else imports `@sentry/*`. Report failures through observability functions. 4xx API errors are expected and not reported. Sentry gets the user id only, never emails, tokens or form values.
+
 ## Next.js
 Before writing Next.js code, read the relevant guide in `node_modules/next/dist/docs/` because version 16 changed APIs. `cacheComponents` is on: client components that read search params must render inside `<Suspense>`.
 

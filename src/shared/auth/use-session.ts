@@ -3,6 +3,7 @@
 import type { Session } from "@supabase/supabase-js";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { setMonitoredUser } from "@/shared/observability/error-monitoring";
 import { getSupabaseClient } from "./supabase-client";
 
 interface SessionState {
@@ -32,6 +33,7 @@ export function useSession(): SessionState {
         if (event === "SIGNED_OUT") {
           queryClient.clear();
         }
+        setMonitoredUser(session?.user.id ?? null);
         setState({ status: session ? "authenticated" : "anonymous", session });
       },
     );
@@ -43,6 +45,7 @@ export function useSession(): SessionState {
           setError(sessionError);
           return;
         }
+        setMonitoredUser(data.session?.user.id ?? null);
         setState({
           status: data.session ? "authenticated" : "anonymous",
           session: data.session,

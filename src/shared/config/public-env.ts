@@ -37,6 +37,30 @@ function otpLength(value: string | undefined, name: string): number {
 }
 
 export const publicEnv = {
+  get sentryDsn(): string | undefined {
+    const value = process.env.NEXT_PUBLIC_SENTRY_DSN?.trim();
+    if (!value) return undefined;
+    try {
+      const url = new URL(value);
+      if (url.protocol !== "https:") throw new Error();
+    } catch {
+      throw new Error("NEXT_PUBLIC_SENTRY_DSN must be an HTTPS URL");
+    }
+    return value;
+  },
+  get sentryEnvironment(): string {
+    return process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT?.trim() ||
+      process.env.NEXT_PUBLIC_VERCEL_ENV?.trim() || "development";
+  },
+  get sentryTracesSampleRate(): number {
+    const value = process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE?.trim();
+    if (!value) return 1;
+    const rate = Number(value);
+    if (!Number.isFinite(rate) || rate < 0 || rate > 1) {
+      throw new Error("NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE must be a number between 0 and 1");
+    }
+    return rate;
+  },
   get apiUrl(): string {
     return origin(process.env.NEXT_PUBLIC_API_URL, "NEXT_PUBLIC_API_URL");
   },

@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Inter_Tight } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
 
-const interTight = Inter_Tight({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  variable: "--font-inter-tight",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-jakarta",
 });
 
 export const metadata: Metadata = {
@@ -19,8 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={interTight.variable}>
-      <body>{children}</body>
+    <html lang="en" className={plusJakartaSans.variable}>
+      <body className="bg-canvas text-fg font-sans antialiased">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

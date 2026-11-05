@@ -1,7 +1,7 @@
 "use client";
 
 import { FileText } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   useActivities,
   useActivity,
@@ -9,6 +9,7 @@ import {
 } from "@/features/activities/api/use-activities";
 import { ActivityDetailCard } from "@/features/activities/components/activity-detail-card";
 import type { Activity, ActivityView } from "@/features/activities/model/activity";
+import { useSignOut } from "@/features/auth/api/use-auth";
 import { useLists } from "@/features/lists/api/use-lists";
 import { ListLabel } from "@/features/lists/components/list-label";
 import { UserMenu } from "@/features/profile/components/user-menu";
@@ -90,9 +91,19 @@ function DetailBody({ activity }: { activity: Activity | null }) {
 
 export function DetailPanel() {
   const pathname = usePathname();
+  const router = useRouter();
+  const signOutMutation = useSignOut();
   const view = resolveViewFromPathname(pathname);
   const { q, list, tag, activity: activityParam, setParam } =
     useDashboardParams();
+
+  const handleSignOut = () => {
+    signOutMutation.mutate(undefined, {
+      onSuccess: () => {
+        router.push("/login");
+      },
+    });
+  };
 
   const { data: viewActivities, isLoading: isViewLoading } = useActivities({
     view,
@@ -124,7 +135,7 @@ export function DetailPanel() {
       >
         <div className="mb-6 flex items-center justify-between gap-2">
           <ThemeToggle />
-          <UserMenu />
+          <UserMenu onSignOut={handleSignOut} />
         </div>
 
         {isLoading ? (

@@ -2,7 +2,13 @@
 import { simulateLatency } from "@/shared/lib/simulate-latency";
 import type { Profile } from "../model/profile";
 
-const DEMO_PROFILE: Profile = {
+export interface ProfilePatch {
+  displayName?: string | null;
+  timezone?: string;
+  emailNotifications?: boolean;
+}
+
+let profileStore: Profile = {
   id: "user-evelyn",
   email: "evelyn@example.com",
   displayName: "Evelyn",
@@ -12,5 +18,14 @@ const DEMO_PROFILE: Profile = {
 
 export async function fetchProfile(): Promise<Profile> {
   await simulateLatency();
-  return { ...DEMO_PROFILE };
+  return { ...profileStore };
+}
+
+export async function updateProfile(patch: ProfilePatch): Promise<Profile> {
+  await simulateLatency();
+  profileStore = {
+    ...profileStore,
+    ...patch,
+  };
+  return { ...profileStore };
 }

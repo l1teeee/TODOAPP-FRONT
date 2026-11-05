@@ -30,6 +30,7 @@ function buildInitialActivities(): Activity[] {
       listId: "list-learning",
       tagIds: ["tag-inspiration"],
       completedAt: null,
+      deletedAt: null,
       createdAt: "2026-01-01T07:00:00.000Z",
       updatedAt: "2026-01-01T07:00:00.000Z",
     },
@@ -47,6 +48,7 @@ function buildInitialActivities(): Activity[] {
       listId: null,
       tagIds: [],
       completedAt: null,
+      deletedAt: null,
       createdAt: "2026-01-01T09:00:00.000Z",
       updatedAt: "2026-01-01T09:00:00.000Z",
     },
@@ -64,6 +66,7 @@ function buildInitialActivities(): Activity[] {
       listId: null,
       tagIds: [],
       completedAt: null,
+      deletedAt: null,
       createdAt: "2026-01-01T11:00:00.000Z",
       updatedAt: "2026-01-01T11:00:00.000Z",
     },
@@ -81,6 +84,7 @@ function buildInitialActivities(): Activity[] {
       listId: "list-learning",
       tagIds: [],
       completedAt: null,
+      deletedAt: null,
       createdAt: "2026-01-01T14:00:00.000Z",
       updatedAt: "2026-01-01T14:00:00.000Z",
     },
@@ -98,6 +102,7 @@ function buildInitialActivities(): Activity[] {
       listId: "list-reading",
       tagIds: ["tag-inspiration"],
       completedAt: null,
+      deletedAt: null,
       createdAt: "2026-01-01T16:00:00.000Z",
       updatedAt: "2026-01-01T16:00:00.000Z",
     },
@@ -116,6 +121,7 @@ function buildInitialActivities(): Activity[] {
       listId: "list-workout",
       tagIds: ["tag-work"],
       completedAt: null,
+      deletedAt: null,
       createdAt: "2026-01-02T08:00:00.000Z",
       updatedAt: "2026-01-02T08:00:00.000Z",
     },
@@ -133,6 +139,7 @@ function buildInitialActivities(): Activity[] {
       listId: "list-learning",
       tagIds: [],
       completedAt: null,
+      deletedAt: null,
       createdAt: "2026-01-02T09:00:00.000Z",
       updatedAt: "2026-01-02T09:00:00.000Z",
     },
@@ -150,6 +157,7 @@ function buildInitialActivities(): Activity[] {
       listId: "list-learning",
       tagIds: ["tag-inspiration"],
       completedAt: null,
+      deletedAt: null,
       createdAt: "2026-01-02T10:00:00.000Z",
       updatedAt: "2026-01-02T10:00:00.000Z",
     },
@@ -167,6 +175,7 @@ function buildInitialActivities(): Activity[] {
       listId: "list-work",
       tagIds: ["tag-designteam"],
       completedAt: null,
+      deletedAt: null,
       createdAt: "2026-01-02T11:00:00.000Z",
       updatedAt: "2026-01-02T11:00:00.000Z",
     },
@@ -184,6 +193,7 @@ function buildInitialActivities(): Activity[] {
       listId: "list-reading",
       tagIds: ["tag-inspiration"],
       completedAt: null,
+      deletedAt: null,
       createdAt: "2026-01-02T12:00:00.000Z",
       updatedAt: "2026-01-02T12:00:00.000Z",
     },
@@ -201,6 +211,7 @@ function buildInitialActivities(): Activity[] {
       listId: "list-work",
       tagIds: ["tag-work"],
       completedAt: null,
+      deletedAt: null,
       createdAt: "2026-01-03T15:00:00.000Z",
       updatedAt: "2026-01-03T15:00:00.000Z",
     },
@@ -218,6 +229,7 @@ function buildInitialActivities(): Activity[] {
       listId: "list-freelance",
       tagIds: ["tag-uxresearch"],
       completedAt: null,
+      deletedAt: null,
       createdAt: "2026-01-03T14:00:00.000Z",
       updatedAt: "2026-01-03T14:00:00.000Z",
     },
@@ -235,6 +247,7 @@ function buildInitialActivities(): Activity[] {
       listId: "list-work",
       tagIds: ["tag-designteam"],
       completedAt: null,
+      deletedAt: null,
       createdAt: "2026-01-03T13:00:00.000Z",
       updatedAt: "2026-01-03T13:00:00.000Z",
     },
@@ -252,6 +265,7 @@ function buildInitialActivities(): Activity[] {
       listId: "list-work",
       tagIds: ["tag-designteam"],
       completedAt: null,
+      deletedAt: null,
       createdAt: "2026-01-03T12:00:00.000Z",
       updatedAt: "2026-01-03T12:00:00.000Z",
     },
@@ -269,6 +283,7 @@ function buildInitialActivities(): Activity[] {
       listId: "list-freelance",
       tagIds: ["tag-work"],
       completedAt: "2026-01-03T10:30:00.000Z",
+      deletedAt: null,
       createdAt: "2026-01-03T11:00:00.000Z",
       updatedAt: "2026-01-03T11:00:00.000Z",
     },
@@ -286,6 +301,7 @@ function buildInitialActivities(): Activity[] {
       listId: "list-freelance",
       tagIds: ["tag-meeting"],
       completedAt: "2026-01-03T09:30:00.000Z",
+      deletedAt: null,
       createdAt: "2026-01-03T10:00:00.000Z",
       updatedAt: "2026-01-03T10:00:00.000Z",
     },
@@ -294,6 +310,10 @@ function buildInitialActivities(): Activity[] {
 
 let activitiesStore: Activity[] = buildInitialActivities();
 let nextActivityCounter = 100;
+
+function cloneActivity(item: Activity): Activity {
+  return { ...item, tagIds: item.tagIds ? [...item.tagIds] : [] };
+}
 
 function compareActivities(a: Activity, b: Activity): number {
   if (a.kind !== b.kind) {
@@ -322,6 +342,9 @@ export async function fetchActivities(
 
   return activitiesStore
     .filter((activity) => {
+      if (activity.deletedAt !== null) {
+        return false;
+      }
       if (!matchesViewRange(activity, query.view, today)) {
         return false;
       }
@@ -343,14 +366,39 @@ export async function fetchActivities(
       return true;
     })
     .sort(compareActivities)
-    .map((item) => ({ ...item, tagIds: item.tagIds ? [...item.tagIds] : [] }));
+    .map(cloneActivity);
 }
 
 export async function fetchActivity(id: string): Promise<Activity | null> {
   await simulateLatency();
-  const found = activitiesStore.find((item) => item.id === id);
+  const found = activitiesStore.find(
+    (item) => item.id === id && item.deletedAt === null,
+  );
   if (!found) return null;
-  return { ...found, tagIds: found.tagIds ? [...found.tagIds] : [] };
+  return cloneActivity(found);
+}
+
+export async function listCompleted(): Promise<Activity[]> {
+  await simulateLatency();
+  return activitiesStore
+    .filter(
+      (activity) =>
+        activity.deletedAt === null && activity.status === "completed",
+    )
+    .sort((a, b) =>
+      (b.completedAt ?? b.updatedAt).localeCompare(
+        a.completedAt ?? a.updatedAt,
+      ),
+    )
+    .map(cloneActivity);
+}
+
+export async function listTrashed(): Promise<Activity[]> {
+  await simulateLatency();
+  return activitiesStore
+    .filter((activity) => activity.deletedAt !== null)
+    .sort((a, b) => (b.deletedAt ?? "").localeCompare(a.deletedAt ?? ""))
+    .map(cloneActivity);
 }
 
 export async function createActivity(input: ActivityInput): Promise<Activity> {
@@ -370,11 +418,12 @@ export async function createActivity(input: ActivityInput): Promise<Activity> {
     listId: input.listId ?? null,
     tagIds: input.tagIds ? [...input.tagIds] : [],
     completedAt: input.status === "completed" ? nowIso : null,
+    deletedAt: null,
     createdAt: nowIso,
     updatedAt: nowIso,
   };
   activitiesStore = [created, ...activitiesStore];
-  return { ...created };
+  return cloneActivity(created);
 }
 
 export async function updateActivity(
@@ -392,18 +441,44 @@ export async function updateActivity(
     ...existing,
     ...patch,
     completedAt:
-      nextStatus === "completed"
-        ? (existing.completedAt ?? nowIso)
-        : null,
+      nextStatus === "completed" ? (existing.completedAt ?? nowIso) : null,
     updatedAt: nowIso,
   };
   activitiesStore = activitiesStore.map((item) =>
     item.id === id ? updated : item,
   );
-  return { ...updated };
+  return cloneActivity(updated);
 }
 
 export async function trashActivity(id: string): Promise<void> {
+  await simulateLatency();
+  const nowIso = new Date().toISOString();
+  activitiesStore = activitiesStore.map((item) =>
+    item.id === id
+      ? { ...item, deletedAt: nowIso, updatedAt: nowIso }
+      : item,
+  );
+}
+
+export async function restoreActivity(id: string): Promise<Activity> {
+  await simulateLatency();
+  const existing = activitiesStore.find((item) => item.id === id);
+  if (!existing) {
+    throw new Error(`Activity ${id} not found`);
+  }
+  const nowIso = new Date().toISOString();
+  const restored: Activity = {
+    ...existing,
+    deletedAt: null,
+    updatedAt: nowIso,
+  };
+  activitiesStore = activitiesStore.map((item) =>
+    item.id === id ? restored : item,
+  );
+  return cloneActivity(restored);
+}
+
+export async function deleteActivityForever(id: string): Promise<void> {
   await simulateLatency();
   activitiesStore = activitiesStore.filter((item) => item.id !== id);
 }

@@ -216,6 +216,11 @@ body {
     rotate: -15deg;
   }
 
+  .switch-thumb[data-checked="true"],
+  [role="radio"][aria-checked="true"] {
+    animation: pop 220ms ease-out;
+  }
+
   .checkbox-input:checked {
     animation: pop 240ms ease-out;
   }

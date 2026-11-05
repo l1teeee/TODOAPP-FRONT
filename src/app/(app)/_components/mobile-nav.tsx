@@ -1,7 +1,9 @@
 "use client";
 
 import { Menu } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useSignOut } from "@/features/auth/api/use-auth";
 import { UserMenu } from "@/features/profile/components/user-menu";
 import { ThemeToggle } from "@/shared/theme/theme-toggle";
 import { IconButton } from "@/shared/ui/icon-button";
@@ -10,7 +12,17 @@ import { AppRail } from "./app-rail";
 import { AppSidebar } from "./app-sidebar";
 
 export function MobileNav() {
+  const router = useRouter();
+  const signOutMutation = useSignOut();
   const [open, setOpen] = useState(false);
+
+  const handleSignOut = () => {
+    signOutMutation.mutate(undefined, {
+      onSuccess: () => {
+        router.push("/login");
+      },
+    });
+  };
 
   return (
     <div className="flex items-center justify-between border-b border-line bg-surface px-4 py-2.5 lg:hidden">
@@ -26,7 +38,7 @@ export function MobileNav() {
 
       <div className="flex items-center gap-2">
         <ThemeToggle />
-        <UserMenu />
+        <UserMenu onSignOut={handleSignOut} />
       </div>
 
       <Sheet
